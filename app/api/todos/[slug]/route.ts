@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fetchATodo, deleteATodo, editATodo } from "@/data/firestore";
 
 // 할일 단일 조회
 export async function GET(
@@ -9,14 +10,15 @@ export async function GET(
 
   const query = searchParams.get("query");
 
+  const fetchedTodo = await fetchATodo(params.slug);
+
+  if (fetchedTodo === null) {
+    return new Response(null, { status: 204 });
+  }
+
   const response = {
     message: "get todo item",
-    data: {
-      id: params.slug,
-      title: "아이템 하나",
-      is_done: false,
-      query,
-    },
+    data: fetchedTodo,
   };
   return NextResponse.json(response, { status: 200 });
 }
@@ -26,13 +28,15 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
+  const deletedTodo = await deleteATodo(params.slug);
+
+  if (deletedTodo === null) {
+    return new Response(null, { status: 204 });
+  }
+
   const response = {
     message: "delete todo item",
-    data: {
-      id: params.slug,
-      title: "아이템 하나",
-      is_done: false,
-    },
+    data: deletedTodo,
   };
   return NextResponse.json(response, { status: 200 });
 }
@@ -44,15 +48,15 @@ export async function POST(
 ) {
   const { title, is_done } = await request.json();
 
-  const editTodo = {
-    id: params.slug,
-    title,
-    is_done,
-  };
+  const editedTodo = await editATodo(params.slug, { title, is_done });
+
+  if (editedTodo === null) {
+    return new Response(null, { status: 204 });
+  }
 
   const response = {
     message: "edit todo item",
-    data: editTodo,
+    data: editedTodo,
   };
   return NextResponse.json(response, { status: 200 });
 }
