@@ -12,16 +12,29 @@ import {
   TableCell,
   Input,
   Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@nextui-org/react";
-import { Todo } from "@/types";
+
+import { CustomModalType, FocusedTodoType, Todo } from "@/types";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { VerticalDotsIcon } from "./icons";
 
 export default function TodosTable({ todos }: { todos: Todo[] }) {
   const [todoAddEnable, setTodoAddEnable] = useState<boolean>(false);
   const [aTodoValue, setATodoValue] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -82,6 +95,8 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
     }
   };
 
+  const [currentModalData, setCurrentModalData] = useState<FocusedTodoType>();
+
   return (
     <>
       {/* alert 컴포넌트 */}
@@ -108,6 +123,7 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
           }}
           onBlur={() => checkFocus()}
         />
+
         <Button
           className="h-auto"
           color={todoAddEnable ? "warning" : "default"}
@@ -124,6 +140,7 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
           <TableColumn>할일 내용</TableColumn>
           <TableColumn>완료 여부</TableColumn>
           <TableColumn>생성일</TableColumn>
+          <TableColumn>액션</TableColumn>
         </TableHeader>
         <TableBody emptyContent={"새로운 루틴을 추가하세요."}>
           {todos &&
@@ -133,10 +150,63 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
                 <TableCell>{aTodo.title}</TableCell>
                 <TableCell>{aTodo.is_done ? "완료" : "아직"}</TableCell>
                 <TableCell>{aTodo.created_at}</TableCell>
+                <TableCell>
+                  <div className="relative flex justify-end items-center gap-2">
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <Button isIconOnly size="sm" variant="light">
+                          <VerticalDotsIcon className="text-default-300" />
+                        </Button>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        aria-label="할일 옵션"
+                        onAction={(key) => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: key as CustomModalType,
+                          });
+                        }}
+                      >
+                        <DropdownItem key="detail">View</DropdownItem>
+                        <DropdownItem key="edit">Edit</DropdownItem>
+                        <DropdownItem key="delete">Delete</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
         </TableBody>
       </Table>
+
+      {/* 상세보기 모달 */}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                {currentModalData?.modalType}
+              </ModalHeader>
+              <ModalBody>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  Action
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }
