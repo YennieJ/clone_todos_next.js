@@ -24,27 +24,31 @@ import {
   useDisclosure,
   Switch,
   Spinner,
+  Tooltip,
 } from "@nextui-org/react";
 
 import {
   CustomModalType,
   FocusedTodoType,
   Todo,
-  SetATodoStateType,
+  setEditTodoStateType,
 } from "@/types";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { VerticalDotsIcon } from "./icons";
+import { VerticalDotsIcon, DeleteIcon } from "./icons";
 
 export default function TodosTable({ todos }: { todos: Todo[] }) {
   const [todoAddEnable, setTodoAddEnable] = useState<boolean>(false);
   const [aTodoValue, setATodoValue] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
+
   const [currentModalData, setCurrentModalData] = useState<FocusedTodoType>({
     focusedTodo: null,
     modalType: "detail",
   });
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +64,7 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
       setError("칸을 비울 수 없습니다.");
       return;
     }
+    setIsAddLoading(true);
 
     e.currentTarget.reset();
     // delay
@@ -81,28 +86,29 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
         throw new Error("할일 추가에 실패했습니다.");
       }
 
+      setIsAddLoading(false);
+      router.refresh();
+
       // alert 모달창
       notifySuccessEvent("할일이 추가 되었습니다.");
-
-      router.refresh();
     } catch (error) {
       console.error(error);
     }
   };
 
-  // 할일
+  // 할일 수정 함수
   const editATodoHandler = async (
     editATodo: Todo,
-    setATodoState: SetATodoStateType,
+    setEditTodoState: setEditTodoStateType,
     onClose: () => void
   ) => {
     const { id, title, is_done } = editATodo;
     if (title.trim() === "") {
-      setATodoState(null, "칸을 비울 수 없습니다.");
+      setEditTodoState(null, "칸을 비울 수 없습니다.");
       return;
     }
 
-    setATodoState(true, null);
+    setEditTodoState(true, null);
 
     // delay
     await new Promise((f) => setTimeout(f, 1000));
@@ -122,11 +128,45 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
       if (!response.ok) {
         throw new Error("할일 수정에 실패했습니다.");
       }
+      onClose();
+      router.refresh();
 
       // alert 모달창
       notifySuccessEvent("할일이 수정 되었습니다.");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 할일 수정 함수
+  const deleteATodoHandler = async (
+    id: string,
+    setDeleteTodoState: () => void,
+    onClose: () => void
+  ) => {
+    setDeleteTodoState();
+    // delay
+    await new Promise((f) => setTimeout(f, 1000));
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${id}`,
+        {
+          method: "delete",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("할일 삭제에 실패했습니다.");
+      }
       onClose();
       router.refresh();
+
+      // alert 모달창
+      notifySuccessEvent("할일이 삭제 되었습니다.");
     } catch (error) {
       console.error(error);
     }
@@ -161,9 +201,12 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
                 focusedTodo={currentModalData.focusedTodo}
                 modalType={currentModalData.modalType}
                 onClose={onClose}
-                onEdit={async (editATodo, setATodoState, onClose) => {
-                  await editATodoHandler(editATodo, setATodoState, onClose);
+                onEdit={async (editATodo, setEditTodoState, onClose) => {
+                  await editATodoHandler(editATodo, setEditTodoState, onClose);
                 }}
+                onDelete={async (id, setDeleteTodoState, onClose) =>
+                  await deleteATodoHandler(id, setDeleteTodoState, onClose)
+                }
               />
             )
           }
@@ -204,7 +247,7 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
           color={todoAddEnable ? "warning" : "default"}
           type="submit"
         >
-          추가
+          {isAddLoading ? <Spinner color="warning" /> : "추가"}
         </Button>
       </form>
       {/* 할일 목록을 표시하는 테이블 */}
@@ -226,6 +269,20 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
                 <TableCell>{aTodo.created_at}</TableCell>
                 <TableCell>
                   <div className="relative flex justify-end items-center gap-2">
+                    {/* <Tooltip color="danger" content="Delete todo">
+                      <span
+                        className="text-lg text-danger cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: "delete" as CustomModalType,
+                          });
+                        }}
+                      >
+                        <DeleteIcon />
+                      </span>
+                    </Tooltip> */}
                     <Dropdown>
                       <DropdownTrigger>
                         <Button isIconOnly size="sm" variant="light">
@@ -264,35 +321,57 @@ const CustomModal = ({
   modalType,
   onClose,
   onEdit,
+  onDelete,
 }: {
   focusedTodo: Todo;
   modalType: CustomModalType;
   onClose: () => void;
   onEdit: (
     editATodo: Todo,
-    setATodoState: SetATodoStateType,
+    setEditTodoState: setEditTodoStateType,
+    onClose: () => void
+  ) => void;
+  onDelete: (
+    id: string,
+    setDeleteTodoState: () => void,
     onClose: () => void
   ) => void;
 }) => {
+  // 할일 상세
   const detailModal = () => {
     return (
       <>
-        <ModalHeader className="flex flex-col gap-1">{modalType}</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">할일 상세</ModalHeader>
         <ModalBody>
-          <p>{modalType}</p>
+          <p>
+            <span className="font-bold">id : </span>
+            {focusedTodo.id}
+          </p>
+          <p>
+            <span className="font-bold">할일 내용 : </span>
+            {focusedTodo.title}
+          </p>
+
+          <p>
+            <span className="font-bold">완료 여부 : </span>
+            {`${focusedTodo.is_done ? "완료" : "미완료"}`}
+          </p>
+
+          <p>
+            <span className="font-bold">작성일 : </span>
+            {focusedTodo.created_at}
+          </p>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" variant="light" onPress={onClose}>
-            Close
-          </Button>
-          <Button color="primary" onPress={onClose}>
-            Actio n
+          <Button color="default" onPress={onClose}>
+            닫기
           </Button>
         </ModalFooter>
       </>
     );
   };
 
+  // 할일 수정
   const editModal = () => {
     // 수정된 할일 입력
     const [editedTodoTitle, setEditedTodoTitle] = useState(focusedTodo.title);
@@ -301,7 +380,7 @@ const CustomModal = ({
     const [isDone, setIsDone] = useState(focusedTodo.is_done);
 
     // 업데이트 로딩
-    const [isLoading, setIsLoading] = useState(false);
+    const [isEditLoading, setIsEditLoading] = useState(false);
 
     // 수정 input error
     const [editError, setEditError] = useState("");
@@ -313,8 +392,8 @@ const CustomModal = ({
       is_done: isDone,
     };
 
-    const setATodoState: SetATodoStateType = (boolean, string) => {
-      setIsLoading(boolean || false);
+    const setEditTodoState: setEditTodoStateType = (boolean, string) => {
+      setIsEditLoading(boolean || false);
       setEditError(string || "");
     };
 
@@ -385,10 +464,10 @@ const CustomModal = ({
               focusedTodo.is_done === editATodo.is_done
             }
             onPress={() => {
-              onEdit(editATodo, setATodoState, onClose);
+              onEdit(editATodo, setEditTodoState, onClose);
             }}
           >
-            {isLoading ? <Spinner color="warning" /> : "수정"}
+            {isEditLoading ? <Spinner color="warning" /> : "수정"}
           </Button>
           <Button color="default" onPress={onClose}>
             닫기
@@ -398,19 +477,32 @@ const CustomModal = ({
     );
   };
 
+  // 할일 삭제
   const deleteModal = () => {
+    const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+    const setDeleteTodoState = () => setIsDeleteLoading(true);
     return (
       <>
-        <ModalHeader className="flex flex-col gap-1">{modalType}</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">할일 삭제</ModalHeader>
         <ModalBody>
-          <p>{modalType}</p>
+          <p>
+            <span className="font-bold">할일 내용 : </span>
+            {focusedTodo.title}
+          </p>
+          <p>을 삭제하시겠습니까?</p>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" variant="light" onPress={onClose}>
-            Close
+          <Button
+            color="warning"
+            variant="flat"
+            onPress={() => {
+              onDelete(focusedTodo.id, setDeleteTodoState, onClose);
+            }}
+          >
+            {isDeleteLoading ? <Spinner color="warning" /> : "삭제"}
           </Button>
-          <Button color="primary" onPress={onClose}>
-            Actio n
+          <Button color="default" onPress={onClose}>
+            닫기
           </Button>
         </ModalFooter>
       </>

@@ -18,7 +18,7 @@ export type FocusedTodoType = {
   modalType: CustomModalType;
 };
 
-export type SetATodoStateType = (
+export type setEditTodoStateType = (
   isLoading: boolean | null,
   errorMessage: string | null
 ) => void;
