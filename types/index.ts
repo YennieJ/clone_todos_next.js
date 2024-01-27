@@ -8,7 +8,7 @@ export type Todo = {
   id: string;
   title: string;
   is_done: boolean;
-  created_at: any;
+  created_at?: any;
 };
 
 export type CustomModalType = "detail" | "edit" | "delete";
@@ -17,3 +17,8 @@ export type FocusedTodoType = {
   focusedTodo: Todo | null;
   modalType: CustomModalType;
 };
+
+export type SetATodoStateType = (
+  isLoading: boolean | null,
+  errorMessage: string | null
+) => void;
