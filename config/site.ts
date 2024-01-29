@@ -12,22 +12,6 @@ export const siteConfig = {
       label: "todos",
       href: "/todos",
     },
-    {
-      label: "Docs",
-      href: "/docs",
-    },
-    {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
-    },
   ],
   navMenuItems: [
     {
@@ -63,6 +47,7 @@ export const siteConfig = {
       href: "/logout",
     },
   ],
+  // 링크 관련 태그인데 사용할 일이 있을까
   links: {
     github: "https://github.com/nextui-org/nextui",
     twitter: "https://twitter.com/getnextui",

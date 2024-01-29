@@ -50,6 +50,8 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
     modalType: "detail",
   });
 
+  console.log(todos);
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -72,7 +74,7 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
     await new Promise((f) => setTimeout(f, 1000));
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos`,
         {
           method: "post",
           body: JSON.stringify({ title: aTodoValue }),
@@ -141,11 +143,12 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
   };
 
   const isDoneUI = (isDone: boolean) =>
-    isDone ? "line-through text-white/50" : "";
+    isDone ? "line-through text-gray-900/50 dark:text-white/40" : "";
 
   // 할일 체크 함수
   const checkTodoHandler = async (aTodo: Todo, checkIsDone: boolean) => {
     isDoneUI(checkIsDone);
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${aTodo.id}`,
@@ -544,27 +547,6 @@ const CustomModal = ({
     const setEditTodoState: setEditTodoStateType = (boolean, string) => {
       setIsEditLoading(boolean || false);
       setEditError(string || "");
-    };
-
-    // temp date edit func
-    const tempDate = () => {
-      const utcTimeString = "2024-01-27T04:15:40.755Z";
-
-      const utcDate = new Date(utcTimeString);
-      const koreaDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // UTC에서 KST로 변환
-
-      const formattedDate = new Intl.DateTimeFormat("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        hour12: true, // 오전/오후 표현
-        timeZoneName: "short",
-      }).format(koreaDate);
-
-      // console.log(formattedDate);
     };
 
     return (
