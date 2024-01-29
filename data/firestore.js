@@ -142,3 +142,25 @@ export async function editATodo(id, { title, is_done }) {
     created_at: fetchedTodo.created_at,
   };
 }
+
+// 단일 수정 체크
+// export async function checkATodo({ id, is_done }) {
+//   const fetchedTodo = await fetchATodo(id);
+
+//   if (fetchedTodo === null) {
+//     return null;
+//   }
+
+//   const todoRef = doc(db, "todos", id);
+
+//   await updateDoc(todoRef, {
+//     is_done,
+//   });
+
+//   return {
+//     id,
+//     title: fetchedTodo.title,
+//     is_done,
+//     created_at: fetchedTodo.created_at,
+//   };
+// }

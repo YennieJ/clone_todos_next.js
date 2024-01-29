@@ -25,6 +25,7 @@ import {
   Switch,
   Spinner,
   Tooltip,
+  Checkbox,
 } from "@nextui-org/react";
 
 import {
@@ -36,7 +37,7 @@ import {
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { VerticalDotsIcon, DeleteIcon } from "./icons";
+import { VerticalDotsIcon, DeleteIcon, EyeIcon, EditIcon } from "./icons";
 
 export default function TodosTable({ todos }: { todos: Todo[] }) {
   const [todoAddEnable, setTodoAddEnable] = useState<boolean>(false);
@@ -131,6 +132,7 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
       onClose();
       router.refresh();
 
+      console.log("edit에서 refresh");
       // alert 모달창
       notifySuccessEvent("할일이 수정 되었습니다.");
     } catch (error) {
@@ -138,7 +140,34 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
     }
   };
 
-  // 할일 수정 함수
+  const isDoneUI = (isDone: boolean) =>
+    isDone ? "line-through text-white/50" : "";
+
+  // 할일 체크 함수
+  const checkTodoHandler = async (aTodo: Todo, checkIsDone: boolean) => {
+    isDoneUI(checkIsDone);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${aTodo.id}`,
+        {
+          method: "post",
+          body: JSON.stringify({ title: aTodo.title, is_done: checkIsDone }),
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("할일 수정에 실패했습니다.");
+      }
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 할일 삭제 함수
   const deleteATodoHandler = async (
     id: string,
     setDeleteTodoState: () => void,
@@ -187,6 +216,115 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
         setError("");
       }
     }
+  };
+
+  // temp 시간표시
+  function formatTimeWithoutDate(dateTimeString: string) {
+    const dateTime = new Date(dateTimeString);
+
+    // 오전/오후 계산
+    const period = dateTime.getHours() < 12 ? "오전" : "오후";
+
+    // 12시간제로 변환
+    const hours = dateTime.getHours() % 12 || 12;
+
+    // 분과 초를 두 자리 숫자로 변환
+    const minutes = ("0" + dateTime.getMinutes()).slice(-2);
+    const seconds = ("0" + dateTime.getSeconds()).slice(-2);
+
+    // 변환된 문자열 반환
+    return `${period} ${hours}:${minutes}:${seconds}`;
+  }
+
+  const RoutineTable = () => {
+    return (
+      <Table hideHeader aria-label="Routine Table">
+        <TableHeader>
+          <TableColumn>checkBox</TableColumn>
+
+          {/* <TableColumn>아이디</TableColumn> */}
+          {/* <TableColumn>완료 여부</TableColumn> */}
+          <TableColumn>생성일</TableColumn>
+          <TableColumn>할일 내용</TableColumn>
+          <TableColumn>ACTIONS</TableColumn>
+        </TableHeader>
+        <TableBody emptyContent={"새로운 루틴을 추가하세요."}>
+          {todos &&
+            todos.map((aTodo) => (
+              <TableRow key={aTodo.id} className={isDoneUI(aTodo.is_done)}>
+                <TableCell>
+                  <Checkbox
+                    defaultSelected={aTodo.is_done}
+                    onValueChange={(checkIsDone) => {
+                      checkTodoHandler(aTodo, checkIsDone);
+                    }}
+                  />
+                  {/* {isCheckLoading ? (
+                    <Spinner color="warning" />
+                  ) : (
+                    <Checkbox
+                      defaultSelected={aTodo.is_done}
+                      onValueChange={(checkIsDone) => {
+                        checkTodoHandler(aTodo, checkIsDone);
+                      }}
+                    ></Checkbox>
+                  )} */}
+                </TableCell>
+                {/* <TableCell>{aTodo.id.slice(0, 4)}</TableCell> */}
+                {/* <TableCell>{aTodo.is_done ? "완료" : "아직"}</TableCell> */}
+                <TableCell>{formatTimeWithoutDate(aTodo.created_at)}</TableCell>
+                <TableCell>{aTodo.title}</TableCell>
+                <TableCell>
+                  <div className="relative flex justify-end items-center gap-2">
+                    <Tooltip content="Details">
+                      <span
+                        className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: "detail" as CustomModalType,
+                          });
+                        }}
+                      >
+                        <EyeIcon />
+                      </span>
+                    </Tooltip>
+                    <Tooltip content="Edit Routine">
+                      <span
+                        className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: "edit" as CustomModalType,
+                          });
+                        }}
+                      >
+                        <EditIcon />
+                      </span>
+                    </Tooltip>
+                    <Tooltip color="danger" content="Delete Routine">
+                      <span
+                        className="text-lg text-danger cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: "delete" as CustomModalType,
+                          });
+                        }}
+                      >
+                        <DeleteIcon />
+                      </span>
+                    </Tooltip>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    );
   };
 
   const ModalComponent = () => {
@@ -251,13 +389,16 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
         </Button>
       </form>
       {/* 할일 목록을 표시하는 테이블 */}
-      <Table aria-label="Example static collection table">
+      {/* <Table
+        aria-label="Example static collection table"
+        selectionMode="multiple"
+      >
         <TableHeader>
           <TableColumn>아이디</TableColumn>
           <TableColumn>할일 내용</TableColumn>
           <TableColumn>완료 여부</TableColumn>
           <TableColumn>생성일</TableColumn>
-          <TableColumn>액션</TableColumn>
+          <TableColumn>ACTIONS</TableColumn>
         </TableHeader>
         <TableBody emptyContent={"새로운 루틴을 추가하세요."}>
           {todos &&
@@ -269,7 +410,35 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
                 <TableCell>{aTodo.created_at}</TableCell>
                 <TableCell>
                   <div className="relative flex justify-end items-center gap-2">
-                    {/* <Tooltip color="danger" content="Delete todo">
+                    <Tooltip content="Details">
+                      <span
+                        className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: "detail" as CustomModalType,
+                          });
+                        }}
+                      >
+                        <EyeIcon />
+                      </span>
+                    </Tooltip>
+                    <Tooltip content="Edit user">
+                      <span
+                        className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                        onClick={() => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: "edit" as CustomModalType,
+                          });
+                        }}
+                      >
+                        <EditIcon />
+                      </span>
+                    </Tooltip>
+                    <Tooltip color="danger" content="Delete todo">
                       <span
                         className="text-lg text-danger cursor-pointer active:opacity-50"
                         onClick={() => {
@@ -282,34 +451,14 @@ export default function TodosTable({ todos }: { todos: Todo[] }) {
                       >
                         <DeleteIcon />
                       </span>
-                    </Tooltip> */}
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <Button isIconOnly size="sm" variant="light">
-                          <VerticalDotsIcon className="text-default-300" />
-                        </Button>
-                      </DropdownTrigger>
-                      <DropdownMenu
-                        aria-label="할일 옵션"
-                        onAction={(key) => {
-                          onOpen();
-                          setCurrentModalData({
-                            focusedTodo: aTodo,
-                            modalType: key as CustomModalType,
-                          });
-                        }}
-                      >
-                        <DropdownItem key="detail">View</DropdownItem>
-                        <DropdownItem key="edit">Edit</DropdownItem>
-                        <DropdownItem key="delete">Delete</DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
+                    </Tooltip>
                   </div>
                 </TableCell>
               </TableRow>
             ))}
         </TableBody>
-      </Table>
+      </Table> */}
+      {RoutineTable()}
       {/* 상세보기 모달 */}
       {ModalComponent()}
     </>
@@ -524,3 +673,27 @@ const CustomModal = ({
   };
   return <>{getModal(modalType)}</>;
 };
+
+{
+  /* <Dropdown>
+                      <DropdownTrigger>
+                        <Button isIconOnly size="sm" variant="light">
+                          <VerticalDotsIcon className="text-default-300" />
+                        </Button>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        aria-label="할일 옵션"
+                        onAction={(key) => {
+                          onOpen();
+                          setCurrentModalData({
+                            focusedTodo: aTodo,
+                            modalType: key as CustomModalType,
+                          });
+                        }}
+                      >
+                        <DropdownItem key="detail">View</DropdownItem>
+                        <DropdownItem key="edit">Edit</DropdownItem>
+                        <DropdownItem key="delete">Delete</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown> */
+}
