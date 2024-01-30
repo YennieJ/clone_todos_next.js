@@ -46,9 +46,14 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  const { title, is_done } = await request.json();
+  const { title, memo, is_done, selected_at } = await request.json();
 
-  const editedTodo = await editATodo(params.slug, { title, is_done });
+  const editedTodo = await editATodo(params.slug, {
+    title,
+    memo,
+    is_done,
+    selected_at,
+  });
 
   if (editedTodo === null) {
     return new Response(null, { status: 204 });

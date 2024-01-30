@@ -46,39 +46,37 @@ export async function fetchTodos() {
     const aTodo = {
       id: doc.id,
       title: doc.data()["title"],
+      memo: doc.data()["memo"],
       is_done: doc.data()["is_done"],
-      created_at: doc.data()["created_at"].toDate(),
-      // .toLocaleTimeString("ko")
+      selected_at: doc.data()["selected_at"],
     };
 
     fetchedTodos.push(aTodo);
-    // doc.data() is never undefined for query doc snapshots
   });
 
   return fetchedTodos;
 }
 
 // 할일 추가
-export async function addATodo({ title }) {
-  // Add a new document with a generated id
+export async function addATodo({ title, memo, selectedTime }) {
   const newTodoRef = doc(collection(db, "todos"));
-
-  const createdAtTimestamp = Timestamp.fromDate(new Date());
 
   const newTodoData = {
     id: newTodoRef.id,
     title,
+    memo,
     is_done: false,
-    created_at: createdAtTimestamp,
+    selected_at: selectedTime,
   };
-  // later...
+
   await setDoc(newTodoRef, newTodoData);
 
   return {
     id: newTodoRef.id,
     title,
+    memo,
     is_done: false,
-    created_at: createdAtTimestamp.toDate(),
+    selected_at: selectedTime,
   };
 }
 
@@ -96,13 +94,12 @@ export async function fetchATodo(id) {
     const fetchedTodo = {
       id: todoDocSnap.id,
       title: todoDocSnap.data()["title"],
+      memo: todoDocSnap.data()["memo"],
       is_done: todoDocSnap.data()["is_done"],
-      created_at: todoDocSnap.data()["created_at"].toDate(),
-      // .toLocaleTimeString("ko")
+      selected_at: todoDocSnap.data()["selected_at"],
     };
     return fetchedTodo;
   } else {
-    // docSnap.data() will be undefined in this case
     console.log("No such document!");
     return null;
   }
@@ -121,7 +118,7 @@ export async function deleteATodo(id) {
 }
 
 // 단일 할일 수정
-export async function editATodo(id, { title, is_done }) {
+export async function editATodo(id, { title, memo, is_done, selected_at }) {
   const fetchedTodo = await fetchATodo(id);
 
   if (fetchedTodo === null) {
@@ -132,13 +129,16 @@ export async function editATodo(id, { title, is_done }) {
 
   await updateDoc(todoRef, {
     title,
+    memo,
     is_done,
+    selected_at,
   });
 
   return {
     id,
     title,
+    memo,
     is_done,
-    created_at: fetchedTodo.created_at,
+    selected_at,
   };
 }
