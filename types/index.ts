@@ -11,14 +11,9 @@ export type Todo = {
   created_at?: any;
 };
 
-export type CustomModalType = "detail" | "edit" | "delete";
+export type CustomModalType = "detail" | "edit" | "delete" | "addTodo";
 
 export type FocusedTodoType = {
   focusedTodo: Todo | null;
   modalType: CustomModalType;
 };
-
-export type setEditTodoStateType = (
-  isLoading: boolean | null,
-  errorMessage: string | null
-) => void;
