@@ -2,12 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import { Todo } from "@/types";
-
 import {
   Input,
   Button,
@@ -16,7 +10,11 @@ import {
   ModalFooter,
   Switch,
   Spinner,
+  Textarea,
 } from "@nextui-org/react";
+
+import { Todo } from "@/types";
+import { alertSuccess } from "@/app/utils/alert-success";
 
 const EditRoutineForm = ({
   focusedTodo,
@@ -25,114 +23,115 @@ const EditRoutineForm = ({
   focusedTodo: Todo;
   onClose: () => void;
 }) => {
-  // 수정된 할일 입력
-  const [editedTodoTitle, setEditedTodoTitle] = useState(focusedTodo.title);
-
-  // 수정된 할일 여부
-  const [isDone, setIsDone] = useState(focusedTodo.is_done);
+  // 수정된 시간,할일,완료,메모 입력
+  const [editedTime, setEditedTime] = useState<string>(focusedTodo.selected_at);
+  const [editedTitle, setEditedTitle] = useState<string>(focusedTodo.title);
+  const [editedIsDone, editedSetIsDone] = useState<boolean>(
+    focusedTodo.is_done
+  );
+  const [editedMemo, setEditedMemo] = useState<string | undefined>(
+    focusedTodo.memo
+  );
 
   // 업데이트 로딩
   const [isEditLoading, setIsEditLoading] = useState(false);
 
-  // 수정 input error
-  const [editError, setEditError] = useState("");
-
-  // 수정된 할일 객체
-  const editedATodo = {
-    id: focusedTodo.id,
-    title: editedTodoTitle,
-    is_done: isDone,
-  };
-
   const router = useRouter();
 
-  const notifySuccessEvent = (meg: string) => toast.success(meg);
-
   // 할일 수정 함수
-  const editATodoHandler = async (
-    e: React.FormEvent<HTMLFormElement>,
-    editedATodo: Todo,
-    onClose: () => void
-  ) => {
+  const editATodoHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { id, title, is_done } = editedATodo;
-    if (title.trim() === "") {
-      setEditError("칸을 비울 수 없습니다.");
-      return;
-    }
+    const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${focusedTodo.id}`;
+
+    const updatedTodo = {
+      title: editedTitle,
+      memo: editedMemo,
+      is_done: editedIsDone,
+      selected_at: editedTime,
+    };
 
     setIsEditLoading(true);
 
     // delay
     await new Promise((f) => setTimeout(f, 1000));
+
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${id}`,
-        {
-          method: "post",
-          body: JSON.stringify({ title: title, is_done: is_done }),
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        body: JSON.stringify(updatedTodo),
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error("할일 수정에 실패했습니다.");
       }
       onClose();
       router.refresh();
-
-      // alert 모달창
-      notifySuccessEvent("할일이 수정 되었습니다.");
+      alertSuccess("할일이 수정 되었습니다.");
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsEditLoading(false);
     }
   };
 
   return (
     <>
       <ModalHeader className="flex flex-col gap-1">할일 수정</ModalHeader>
-      <form
-        onSubmit={async (e) => {
-          editATodoHandler(e, editedATodo, onClose);
-        }}
-      >
+      <form onSubmit={editATodoHandler}>
         <ModalBody>
-          <p>
-            <span className="font-bold">id : </span>
-            {focusedTodo.id}
-          </p>
-
           <Input
-            autoFocus
-            label="할일"
-            placeholder="할일을 입력해주세요."
+            type="time"
+            name="time"
+            label="시간"
+            placeholder="시간을 선택하세요"
             variant="bordered"
-            isRequired
-            errorMessage={editError}
-            defaultValue={focusedTodo.title}
-            onValueChange={(editTodo) => {
-              setEditedTodoTitle(editTodo);
-              editTodo && setEditError("");
+            labelPlacement="outside"
+            defaultValue={focusedTodo.selected_at}
+            onValueChange={(changedInput) => {
+              setEditedTime(changedInput);
             }}
           />
-
-          <div>
-            <span className="font-bold">완료 여부 : </span>
-            <Switch
-              aria-label="완료 여부"
-              color="warning"
-              defaultSelected={focusedTodo.is_done}
-              onValueChange={setIsDone}
-            />
-          </div>
-          <p>
-            <span className="font-bold">작성일 : </span>
-            {focusedTodo.created_at}
-          </p>
+          <Input
+            type="text"
+            name="title"
+            label="할일"
+            placeholder="할일을 입력해주세요."
+            maxLength={30}
+            autoFocus
+            isRequired
+            variant="bordered"
+            labelPlacement="outside"
+            defaultValue={focusedTodo.title}
+            onValueChange={(editTodo) => {
+              setEditedTitle(editTodo);
+            }}
+          />
+          <Textarea
+            type="text"
+            name="memo"
+            label="memo"
+            placeholder="자세한 내용을 적어주세요"
+            maxRows={3}
+            variant="bordered"
+            labelPlacement="outside"
+            defaultValue={focusedTodo.memo}
+            onValueChange={(changedInput) => {
+              setEditedMemo(changedInput);
+            }}
+          />
+          <Switch
+            aria-label="완료 여부"
+            color="warning"
+            defaultSelected={focusedTodo.is_done}
+            onValueChange={editedSetIsDone}
+          >
+            {editedIsDone ? "완료" : "진행중"}
+          </Switch>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="default" onPress={onClose}>
@@ -143,8 +142,10 @@ const EditRoutineForm = ({
             color="warning"
             variant="flat"
             isDisabled={
-              focusedTodo.title === editedATodo.title &&
-              focusedTodo.is_done === editedATodo.is_done
+              editedTitle.trim() === "" ||
+              (focusedTodo.title === editedTitle &&
+                focusedTodo.is_done === editedIsDone &&
+                focusedTodo.memo === editedMemo)
             }
           >
             {isEditLoading ? <Spinner color="warning" /> : "수정"}

@@ -1,8 +1,15 @@
 import React from "react";
 
-import { Todo } from "@/types";
+import {
+  Button,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Textarea,
+  Input,
+} from "@nextui-org/react";
 
-import { Button, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
+import { Todo } from "@/types";
 
 const DetailRoutine = ({
   focusedTodo,
@@ -13,26 +20,39 @@ const DetailRoutine = ({
 }) => {
   return (
     <>
-      <ModalHeader className="flex flex-col gap-1">할일 상세</ModalHeader>
+      <ModalHeader className="flex flex-col gap-1">
+        {`${focusedTodo.is_done ? "완료된" : "진행중인"} 할일 상세`}
+      </ModalHeader>
       <ModalBody>
-        <p>
-          <span className="font-bold">id : </span>
-          {focusedTodo.id}
-        </p>
-        <p>
-          <span className="font-bold">할일 내용 : </span>
-          {focusedTodo.title}
-        </p>
-
-        <p>
-          <span className="font-bold">완료 여부 : </span>
-          {`${focusedTodo.is_done ? "완료" : "미완료"}`}
-        </p>
-
-        <p>
-          <span className="font-bold">작성일 : </span>
-          {focusedTodo.created_at}
-        </p>
+        <Input
+          type="time"
+          name="time"
+          label="시간"
+          isReadOnly
+          variant="bordered"
+          labelPlacement="outside"
+          defaultValue={focusedTodo.selected_at}
+        />
+        <Textarea
+          type="text"
+          name="todo"
+          label="할일"
+          isReadOnly
+          variant="bordered"
+          labelPlacement="outside"
+          defaultValue={focusedTodo.title}
+        />
+        {focusedTodo.memo && (
+          <Textarea
+            type="text"
+            name="memo"
+            label="memo"
+            isReadOnly
+            variant="bordered"
+            labelPlacement="outside"
+            defaultValue={focusedTodo.memo}
+          />
+        )}
       </ModalBody>
       <ModalFooter>
         <Button color="default" onPress={onClose}>
