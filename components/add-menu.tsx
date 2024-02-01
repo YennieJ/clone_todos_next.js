@@ -7,7 +7,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-import { DeleteIcon } from "./icons";
+import { PlusIcon } from "./icons";
 import { Todo } from "@/types";
 const AddMenu = ({
   ModalHandler,
@@ -15,22 +15,24 @@ const AddMenu = ({
   ModalHandler: (todo: Todo | null, key: Key) => void;
 }) => {
   return (
-    <Dropdown>
-      <DropdownTrigger>
-        <Button isIconOnly size="sm" variant="light">
-          <DeleteIcon className="text-default-300" />
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu
-        aria-label="할일 옵션"
-        onAction={(key) => {
-          ModalHandler(null, key);
-        }}
-      >
-        <DropdownItem key="addTodo">루팅 추가</DropdownItem>
-        <DropdownItem key="createNew">루팅 추가</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+    <div className="text-right">
+      <Dropdown>
+        <DropdownTrigger>
+          <Button isIconOnly size="sm" variant="light">
+            <PlusIcon />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu
+          aria-label="할일 옵션"
+          onAction={(key) => {
+            ModalHandler(null, key);
+          }}
+        >
+          <DropdownItem key="addTodo">루팅 추가</DropdownItem>
+          <DropdownItem key="createNew">루팅 추가</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    </div>
   );
 };
 

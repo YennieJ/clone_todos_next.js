@@ -182,3 +182,31 @@ export const EditIcon = (props: any) => (
     />
   </svg>
 );
+
+export const PlusIcon = ({ size, ...props }: { size?: string }) => {
+  return (
+    <svg
+      width={size || 24}
+      height={size || 24}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M6 12H18"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 18V6"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
