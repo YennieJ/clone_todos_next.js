@@ -30,7 +30,7 @@ const db = getFirestore(app);
 // 모든 할일 가져오기
 export async function fetchTodos() {
   const todosRef = collection(db, "todos");
-  const descQuery = query(todosRef, orderBy("created_at", "desc"));
+  const descQuery = query(todosRef, orderBy("selected_at"));
 
   const querySnapshot = await getDocs(descQuery);
 
@@ -58,7 +58,7 @@ export async function fetchTodos() {
 }
 
 // 할일 추가
-export async function addATodo({ title, memo, selectedTime }) {
+export async function addATodo({ title, memo, selected_at }) {
   const newTodoRef = doc(collection(db, "todos"));
 
   const newTodoData = {
@@ -66,7 +66,7 @@ export async function addATodo({ title, memo, selectedTime }) {
     title,
     memo,
     is_done: false,
-    selected_at: selectedTime,
+    selected_at: selected_at,
   };
 
   await setDoc(newTodoRef, newTodoData);
@@ -76,7 +76,7 @@ export async function addATodo({ title, memo, selectedTime }) {
     title,
     memo,
     is_done: false,
-    selected_at: selectedTime,
+    selected_at: selected_at,
   };
 }
 
