@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import dummyTodos from "@/data/dummy.json";
 import { fetchTodos, addATodo } from "@/data/firestore";
 
 // 할일 목록 가져오기
@@ -14,9 +13,7 @@ export async function GET(request: NextRequest) {
 
 // 할일 추가
 export async function POST(request: NextRequest) {
-  // const data=await request.json();
-
-  const { title, memo, selectedTime } = await request.json();
+  const { title, memo, selected_at } = await request.json();
 
   if (title === undefined) {
     const errMsg = {
@@ -25,7 +22,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(errMsg, { status: 422 });
   }
 
-  const addedTodo = await addATodo({ title, memo, selectedTime });
+  const addedTodo = await addATodo({ title, memo, selected_at });
+
   const response = {
     message: "success add todo",
     data: addedTodo,

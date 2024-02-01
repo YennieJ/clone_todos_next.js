@@ -6,10 +6,6 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  const searchParams = request.nextUrl.searchParams;
-
-  const query = searchParams.get("query");
-
   const fetchedTodo = await fetchATodo(params.slug);
 
   if (fetchedTodo === null) {
@@ -41,7 +37,7 @@ export async function DELETE(
   return NextResponse.json(response, { status: 200 });
 }
 
-// 할일 수정 id
+// 할일 수정
 export async function POST(
   request: NextRequest,
   { params }: { params: { slug: string } }
