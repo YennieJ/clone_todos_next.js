@@ -5,27 +5,58 @@ import {
   getDocs,
   doc,
   setDoc,
-  Timestamp,
   getDoc,
   deleteDoc,
   updateDoc,
   query,
   orderBy,
 } from "firebase/firestore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID,
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+export const auth = getAuth(app);
+
+export async function signUp(email, password) {
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function signIn(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function logOut() {
+  try {
+    await signOut(auth);
+    console.log("로그아웃");
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 // 모든 할일 가져오기
 export async function fetchTodos() {
