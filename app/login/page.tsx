@@ -28,7 +28,7 @@ function LogIn() {
     try {
       const authUser = await logIn(email, password);
       if (authUser) {
-        const response = await axiosInstance.post("/api/login", {
+        const response = await axiosInstance.post("/api/auth", {
           email,
           password,
         });

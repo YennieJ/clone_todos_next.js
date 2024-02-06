@@ -34,7 +34,7 @@ function SignUp() {
     try {
       const authUser = await signUp(email, password);
       if (authUser) {
-        const response = await axiosInstance.post("/api/signup", {
+        const response = await axiosInstance.post("/api/auth", {
           email,
           password,
         });
