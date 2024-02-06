@@ -1,6 +1,6 @@
-import { initializeApp } from "firebase/app";
+import { db } from "@/firebase/client";
+
 import {
-  getFirestore,
   collection,
   getDocs,
   doc,
@@ -11,57 +11,13 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_APP_ID,
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-export const auth = getAuth(app);
-
-export async function signUp(email, password) {
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-export async function signIn(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-export async function logOut() {
-  try {
-    await signOut(auth);
-    console.log("로그아웃");
-  } catch (e) {
-    console.log(e);
-  }
-}
 
 // 모든 할일 가져오기
-export async function fetchTodos() {
-  const todosRef = collection(db, "todos");
-  const descQuery = query(todosRef, orderBy("selected_at"));
+export async function fetchTodos(uid) {
+  const userTodoRef = collection(db, `users/${uid}/routine`);
+
+  // 'selected_at' 필드를 기준으로 내림차순 정렬
+  const descQuery = query(userTodoRef, orderBy("selected_at"));
 
   const querySnapshot = await getDocs(descQuery);
 
@@ -69,96 +25,76 @@ export async function fetchTodos() {
     return [];
   }
 
-  const fetchedTodos = [];
-
-  querySnapshot.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data());
-
-    const aTodo = {
-      id: doc.id,
-      title: doc.data()["title"],
-      memo: doc.data()["memo"],
-      is_done: doc.data()["is_done"],
-      selected_at: doc.data()["selected_at"],
-    };
-
-    fetchedTodos.push(aTodo);
-  });
+  const fetchedTodos = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 
   return fetchedTodos;
 }
 
 // 할일 추가
-export async function addATodo({ title, memo, selected_at }) {
-  const newTodoRef = doc(collection(db, "todos"));
+export async function addATodo({ uid, title, memo, selected_at }) {
+  const userTodoRef = doc(collection(db, `users/${uid}/routine`));
 
   const newTodoData = {
-    id: newTodoRef.id,
+    id: userTodoRef.id,
     title,
     memo,
     is_done: false,
-    selected_at: selected_at,
+    selected_at,
   };
 
-  await setDoc(newTodoRef, newTodoData);
+  // 생성된 문서 참조에 새로운 Todo 데이터를 저장합니다.
+  await setDoc(userTodoRef, newTodoData);
 
-  return {
-    id: newTodoRef.id,
-    title,
-    memo,
-    is_done: false,
-    selected_at: selected_at,
-  };
+  return newTodoData;
 }
 
 // 단일 할일 조회
-export async function fetchATodo(id) {
-  if (id === null) {
-    return null;
-  }
-  const todoDocRef = doc(db, "todos", id);
+export async function fetchATodo(id, uid) {
+  if (!id) return null;
+
+  const todoDocRef = doc(db, `users/${uid}/routine`, id);
   const todoDocSnap = await getDoc(todoDocRef);
 
-  if (todoDocSnap.exists()) {
-    console.log("Document data:", todoDocSnap.data());
-
-    const fetchedTodo = {
-      id: todoDocSnap.id,
-      title: todoDocSnap.data()["title"],
-      memo: todoDocSnap.data()["memo"],
-      is_done: todoDocSnap.data()["is_done"],
-      selected_at: todoDocSnap.data()["selected_at"],
-    };
-    return fetchedTodo;
-  } else {
+  if (!todoDocSnap.exists()) {
     console.log("No such document!");
     return null;
   }
+
+  return {
+    id: todoDocSnap.id,
+    ...todoDocSnap.data(),
+  };
 }
 
 // 단일 할일 삭제
-export async function deleteATodo(id) {
-  const fetchedTodo = await fetchATodo(id);
+export async function deleteATodo(id, uid) {
+  const fetchedTodo = await fetchATodo(id, uid);
 
   if (fetchedTodo === null) {
     return null;
   }
-
-  await deleteDoc(doc(db, "todos", id));
+  await deleteDoc(doc(db, `users/${uid}/routine`, id));
   return fetchedTodo;
 }
 
 // 단일 할일 수정
-export async function editATodo(id, { title, memo, is_done, selected_at }) {
-  const fetchedTodo = await fetchATodo(id);
+export async function editATodo(
+  id,
+  uid,
+  { title, memo, is_done, selected_at }
+) {
+  const fetchedTodo = await fetchATodo(id, uid);
 
   if (fetchedTodo === null) {
     return null;
   }
 
-  const todoRef = doc(db, "todos", id);
+  const todoDocRef = doc(db, `users/${uid}/routine`, id);
 
-  await updateDoc(todoRef, {
+  await updateDoc(todoDocRef, {
     title,
     memo,
     is_done,
