@@ -33,7 +33,7 @@ const DetailRoutine = ({
           labelPlacement="outside"
           defaultValue={focusedTodo.selected_at}
         />
-        <Textarea
+        <Input
           type="text"
           name="todo"
           label="할일"

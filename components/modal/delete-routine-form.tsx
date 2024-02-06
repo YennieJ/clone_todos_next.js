@@ -5,6 +5,8 @@ import {
   ModalBody,
   ModalFooter,
   Spinner,
+  Textarea,
+  Input,
 } from "@nextui-org/react";
 
 import axiosInstance from "@/data/axiosInstance";
@@ -59,11 +61,35 @@ const DeleteRoutineForm = ({
         }}
       >
         <ModalBody>
-          <p>
-            <span className="font-bold">할일 내용 : </span>
-            {focusedTodo.title}
-          </p>
-          <p>을 삭제하시겠습니까?</p>
+          <Input
+            type="time"
+            name="time"
+            label="시간"
+            isReadOnly
+            variant="bordered"
+            labelPlacement="outside"
+            defaultValue={focusedTodo.selected_at}
+          />
+          <Input
+            type="text"
+            name="todo"
+            label="할일"
+            isReadOnly
+            variant="bordered"
+            labelPlacement="outside"
+            defaultValue={focusedTodo.title}
+          />
+          {focusedTodo.memo && (
+            <Textarea
+              type="text"
+              name="memo"
+              label="memo"
+              isReadOnly
+              variant="bordered"
+              labelPlacement="outside"
+              defaultValue={focusedTodo.memo}
+            />
+          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="default" onPress={onClose}>
