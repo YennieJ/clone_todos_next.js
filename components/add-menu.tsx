@@ -7,13 +7,13 @@ import {
   DropdownItem,
 } from "@nextui-org/react";
 
-import { Todo } from "@/types";
+import { Routine } from "@/types";
 
 import { PlusIcon } from "./icons";
 const AddMenu = ({
   ModalHandler,
 }: {
-  ModalHandler: (todo: Todo | null, key: Key) => void;
+  ModalHandler: (routine: Routine | null, key: Key) => void;
 }) => {
   return (
     <div className="text-right">

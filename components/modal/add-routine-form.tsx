@@ -16,10 +16,10 @@ import { alertSuccess, alertFail } from "@/app/utils/alert";
 
 const AddRoutineForm = ({
   onClose,
-  fetchTodos,
+  fetchRoutines,
 }: {
   onClose: () => void;
-  fetchTodos: () => Promise<void>;
+  fetchRoutines: () => Promise<void>;
 }) => {
   // 할일 입력
   const [time, setTime] = useState<string>(getCurrentTime());
@@ -30,10 +30,10 @@ const AddRoutineForm = ({
   const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
 
   // 할일 추가 함수
-  const addATodoHandler = async (e: FormEvent<HTMLFormElement>) => {
+  const addARoutineHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const newTodo = {
+    const newRoutine = {
       title,
       memo,
       selected_at: time,
@@ -44,11 +44,11 @@ const AddRoutineForm = ({
     // delay
     await new Promise((f) => setTimeout(f, 1000));
     try {
-      const response = await axiosInstance.post("/api", newTodo);
+      const response = await axiosInstance.post("/api/routine", newRoutine);
 
       if (response.status === 201) {
         alertSuccess("할일이 추가 되었습니다.");
-        fetchTodos();
+        fetchRoutines();
       } else {
         throw new Error("할일 추가에 실패했습니다.");
       }
@@ -64,7 +64,7 @@ const AddRoutineForm = ({
   return (
     <>
       <ModalHeader className="flex flex-col gap-1">새로운 할일</ModalHeader>
-      <form onSubmit={addATodoHandler}>
+      <form onSubmit={addARoutineHandler}>
         <ModalBody>
           <Input
             type="time"

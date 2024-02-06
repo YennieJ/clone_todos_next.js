@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "@/firebase/server";
-import { fetchATodo, deleteATodo, editATodo } from "@/data/firestore";
+import { fetchARoutine, deleteARoutine, editARoutine } from "@/data/firestore";
 
 // 할일 단일 조회
 export async function GET(
@@ -11,15 +11,15 @@ export async function GET(
   const decodedToken = await getAuth().verifyIdToken(token as string);
   const uid = decodedToken.uid;
 
-  const fetchedTodo = await fetchATodo(params.slug, uid);
+  const fetchedRoutine = await fetchARoutine(params.slug, uid);
 
-  if (fetchedTodo === null) {
+  if (fetchedRoutine === null) {
     return new Response(null, { status: 204 });
   }
 
   const response = {
-    message: "get todo item",
-    data: fetchedTodo,
+    message: "get routine item",
+    data: fetchedRoutine,
   };
   return NextResponse.json(response, { status: 200 });
 }
@@ -33,15 +33,15 @@ export async function DELETE(
   const decodedToken = await getAuth().verifyIdToken(token as string);
   const uid = decodedToken.uid;
 
-  const deletedTodo = await deleteATodo(params.slug, uid);
+  const deletedRoutine = await deleteARoutine(params.slug, uid);
 
-  if (deletedTodo === null) {
+  if (deletedRoutine === null) {
     return new Response(null, { status: 204 });
   }
 
   const response = {
-    message: "delete todo item",
-    data: deletedTodo,
+    message: "delete routine item",
+    data: deletedRoutine,
   };
   return NextResponse.json(response, { status: 200 });
 }
@@ -57,20 +57,20 @@ export async function PATCH(
 
   const { title, memo, is_done, selected_at } = await request.json();
 
-  const editedTodo = await editATodo(params.slug, uid, {
+  const editedRoutine = await editARoutine(params.slug, uid, {
     title,
     memo,
     is_done,
     selected_at,
   });
 
-  if (editedTodo === null) {
+  if (editedRoutine === null) {
     return new Response(null, { status: 204 });
   }
 
   const response = {
-    message: "edit todo item",
-    data: editedTodo,
+    message: "edit routine item",
+    data: editedRoutine,
   };
   return NextResponse.json(response, { status: 200 });
 }

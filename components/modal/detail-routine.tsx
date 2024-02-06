@@ -9,19 +9,19 @@ import {
   Input,
 } from "@nextui-org/react";
 
-import { Todo } from "@/types";
+import { Routine } from "@/types";
 
 const DetailRoutine = ({
-  focusedTodo,
+  focusedRoutine,
   onClose,
 }: {
-  focusedTodo: Todo;
+  focusedRoutine: Routine;
   onClose: () => void;
 }) => {
   return (
     <>
       <ModalHeader className="flex flex-col gap-1">
-        {`${focusedTodo.is_done ? "완료된" : "진행중인"} 할일 상세`}
+        {`${focusedRoutine.is_done ? "완료된" : "진행중인"} 할일 상세`}
       </ModalHeader>
       <ModalBody>
         <Input
@@ -31,18 +31,18 @@ const DetailRoutine = ({
           isReadOnly
           variant="bordered"
           labelPlacement="outside"
-          defaultValue={focusedTodo.selected_at}
+          defaultValue={focusedRoutine.selected_at}
         />
         <Input
           type="text"
-          name="todo"
+          name="routine"
           label="할일"
           isReadOnly
           variant="bordered"
           labelPlacement="outside"
-          defaultValue={focusedTodo.title}
+          defaultValue={focusedRoutine.title}
         />
-        {focusedTodo.memo && (
+        {focusedRoutine.memo && (
           <Textarea
             type="text"
             name="memo"
@@ -50,7 +50,7 @@ const DetailRoutine = ({
             isReadOnly
             variant="bordered"
             labelPlacement="outside"
-            defaultValue={focusedTodo.memo}
+            defaultValue={focusedRoutine.memo}
           />
         )}
       </ModalBody>

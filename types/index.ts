@@ -4,7 +4,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export type Todo = {
+export type Routine = {
   id: string;
   title: string;
   memo?: string;
@@ -19,7 +19,7 @@ export type CustomModalType =
   | "addModal"
   | Key;
 
-export type FocusedTodoType = {
-  focusedTodo: Todo | null;
+export type FocusedRoutineType = {
+  focusedRoutine: Routine | null;
   modalType: CustomModalType;
 };

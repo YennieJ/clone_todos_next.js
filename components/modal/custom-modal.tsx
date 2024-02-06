@@ -1,6 +1,6 @@
 import { Modal, ModalContent } from "@nextui-org/react";
 
-import { FocusedTodoType } from "@/types";
+import { FocusedRoutineType } from "@/types";
 import DetailRoutine from "./detail-routine";
 import AddRoutineForm from "./add-routine-form";
 import EditRoutineForm from "./edit-routine-form";
@@ -10,40 +10,45 @@ const CustomModal = ({
   currentModalData,
   isOpen,
   onOpenChange,
-  fetchTodos,
+  fetchRoutines,
 }: {
-  currentModalData: FocusedTodoType;
+  currentModalData: FocusedRoutineType;
   isOpen: boolean;
   onOpenChange: () => void;
-  fetchTodos: () => Promise<void>;
+  fetchRoutines: () => Promise<void>;
 }) => {
-  const getModalContent = (modalData: FocusedTodoType, onClose: () => void) => {
+  const getModalContent = (
+    modalData: FocusedRoutineType,
+    onClose: () => void
+  ) => {
     switch (modalData.modalType) {
       case "detailModal":
         return (
           <DetailRoutine
-            focusedTodo={modalData.focusedTodo!}
+            focusedRoutine={modalData.focusedRoutine!}
             onClose={onClose}
           />
         );
       case "editModal":
         return (
           <EditRoutineForm
-            focusedTodo={modalData.focusedTodo!}
+            focusedRoutine={modalData.focusedRoutine!}
             onClose={onClose}
-            fetchTodos={fetchTodos}
+            fetchRoutines={fetchRoutines}
           />
         );
       case "deleteModal":
         return (
           <DeleteRoutineForm
-            focusedTodo={modalData.focusedTodo!}
+            focusedRoutine={modalData.focusedRoutine!}
             onClose={onClose}
-            fetchTodos={fetchTodos}
+            fetchRoutines={fetchRoutines}
           />
         );
       case "addModal":
-        return <AddRoutineForm onClose={onClose} fetchTodos={fetchTodos} />;
+        return (
+          <AddRoutineForm onClose={onClose} fetchRoutines={fetchRoutines} />
+        );
       default:
         break;
     }
