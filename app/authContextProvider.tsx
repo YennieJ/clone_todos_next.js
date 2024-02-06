@@ -1,7 +1,9 @@
 "use client";
+
 import React, { createContext, useContext, useEffect, useState } from "react";
+
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "@/data/firestore";
+import { auth } from "@/firebase/client";
 
 interface AuthContextType {
   user: User | null;
@@ -23,7 +25,6 @@ export const AuthContextProvider = ({
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        console.log(user);
       } else {
         setUser(null);
       }
