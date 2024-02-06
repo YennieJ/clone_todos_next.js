@@ -12,7 +12,12 @@ export type Todo = {
   selected_at: string;
 };
 
-export type CustomModalType = "detail" | "edit" | "delete" | "addTodo" | Key;
+export type CustomModalType =
+  | "detailModal"
+  | "editModal"
+  | "deleteModal"
+  | "addModal"
+  | Key;
 
 export type FocusedTodoType = {
   focusedTodo: Todo | null;
