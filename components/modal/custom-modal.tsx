@@ -10,36 +10,40 @@ const CustomModal = ({
   currentModalData,
   isOpen,
   onOpenChange,
+  fetchTodos,
 }: {
   currentModalData: FocusedTodoType;
   isOpen: boolean;
   onOpenChange: () => void;
+  fetchTodos: () => Promise<void>;
 }) => {
   const getModalContent = (modalData: FocusedTodoType, onClose: () => void) => {
     switch (modalData.modalType) {
-      case "detail":
+      case "detailModal":
         return (
           <DetailRoutine
             focusedTodo={modalData.focusedTodo!}
             onClose={onClose}
           />
         );
-      case "edit":
+      case "editModal":
         return (
           <EditRoutineForm
             focusedTodo={modalData.focusedTodo!}
             onClose={onClose}
+            fetchTodos={fetchTodos}
           />
         );
-      case "delete":
+      case "deleteModal":
         return (
           <DeleteRoutineForm
             focusedTodo={modalData.focusedTodo!}
             onClose={onClose}
+            fetchTodos={fetchTodos}
           />
         );
-      case "addTodo":
-        return <AddRoutineForm onClose={onClose} />;
+      case "addModal":
+        return <AddRoutineForm onClose={onClose} fetchTodos={fetchTodos} />;
       default:
         break;
     }
