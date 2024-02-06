@@ -1,5 +1,4 @@
 import React, { Key } from "react";
-
 import {
   Button,
   Dropdown,
@@ -7,8 +6,10 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-import { PlusIcon } from "./icons";
+
 import { Todo } from "@/types";
+
+import { PlusIcon } from "./icons";
 const AddMenu = ({
   ModalHandler,
 }: {
@@ -28,7 +29,7 @@ const AddMenu = ({
             ModalHandler(null, key);
           }}
         >
-          <DropdownItem key="addTodo">루팅 추가</DropdownItem>
+          <DropdownItem key="addModal">루팅 추가</DropdownItem>
           <DropdownItem key="createNew">루팅 추가</DropdownItem>
         </DropdownMenu>
       </Dropdown>
