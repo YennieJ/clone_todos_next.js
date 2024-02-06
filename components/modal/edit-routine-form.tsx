@@ -1,7 +1,5 @@
-"use client";
+import React, { useState, FormEvent } from "react";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Input,
   Button,
@@ -13,15 +11,19 @@ import {
   Textarea,
 } from "@nextui-org/react";
 
+import axiosInstance from "@/data/axiosInstance";
+
 import { Todo } from "@/types";
-import { alertSuccess } from "@/app/utils/alert-success";
+import { alertFail, alertSuccess } from "@/app/utils/alert";
 
 const EditRoutineForm = ({
   focusedTodo,
   onClose,
+  fetchTodos,
 }: {
   focusedTodo: Todo;
   onClose: () => void;
+  fetchTodos: () => Promise<void>;
 }) => {
   // 수정된 시간,할일,완료,메모 입력
   const [editedTime, setEditedTime] = useState<string>(focusedTodo.selected_at);
@@ -36,15 +38,12 @@ const EditRoutineForm = ({
   // 업데이트 로딩
   const [isEditLoading, setIsEditLoading] = useState(false);
 
-  const router = useRouter();
-
   // 할일 수정 함수
-  const editATodoHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+  const editATodoHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${focusedTodo.id}`;
-
     const updatedTodo = {
+      id: focusedTodo.id,
       title: editedTitle,
       memo: editedMemo,
       is_done: editedIsDone,
@@ -55,27 +54,23 @@ const EditRoutineForm = ({
 
     // delay
     await new Promise((f) => setTimeout(f, 1000));
-
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        body: JSON.stringify(updatedTodo),
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
+      const response = await axiosInstance.patch(
+        `/api/${focusedTodo.id}`,
+        updatedTodo
+      );
+      if (response.status === 200) {
+        alertSuccess("할일이 수정 되었습니다.");
+        fetchTodos(); // 데이터 새로고침
+      } else {
         throw new Error("할일 수정에 실패했습니다.");
       }
-      onClose();
-      router.refresh();
-      alertSuccess("할일이 수정 되었습니다.");
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      error.message === "Request failed with status code 404" &&
+        alertFail("할일 수정에 실패했습니다.");
     } finally {
       setIsEditLoading(false);
+      onClose();
     }
   };
 

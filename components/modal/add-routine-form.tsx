@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, FormEvent } from "react";
 import {
   Input,
   Button,
@@ -10,10 +9,18 @@ import {
   Textarea,
 } from "@nextui-org/react";
 
-import { getCurrentTime } from "@/app/utils/fomat-time";
-import { alertSuccess } from "@/app/utils/alert-success";
+import axiosInstance from "@/data/axiosInstance";
 
-const AddRoutineForm = ({ onClose }: { onClose: () => void }) => {
+import { getCurrentTime } from "@/app/utils/fomat-time";
+import { alertSuccess, alertFail } from "@/app/utils/alert";
+
+const AddRoutineForm = ({
+  onClose,
+  fetchTodos,
+}: {
+  onClose: () => void;
+  fetchTodos: () => Promise<void>;
+}) => {
   // 할일 입력
   const [time, setTime] = useState<string>(getCurrentTime());
   const [title, setTitle] = useState<string>("");
@@ -22,13 +29,9 @@ const AddRoutineForm = ({ onClose }: { onClose: () => void }) => {
   // 업데이트 로딩
   const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
 
-  const router = useRouter();
-
   // 할일 추가 함수
-  const addATodoHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+  const addATodoHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos`;
 
     const newTodo = {
       title,
@@ -41,25 +44,20 @@ const AddRoutineForm = ({ onClose }: { onClose: () => void }) => {
     // delay
     await new Promise((f) => setTimeout(f, 1000));
     try {
-      const response = await fetch(apiUrl, {
-        method: "post",
-        body: JSON.stringify(newTodo),
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axiosInstance.post("/api", newTodo);
 
-      if (!response.ok) {
+      if (response.status === 201) {
+        alertSuccess("할일이 추가 되었습니다.");
+        fetchTodos();
+      } else {
         throw new Error("할일 추가에 실패했습니다.");
       }
-      onClose();
-      router.refresh();
-      alertSuccess("할일이 추가 되었습니다.");
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      error.message === "Request failed with status code 404" &&
+        alertFail("할일 추가에 실패했습니다.");
     } finally {
       setIsAddLoading(false);
+      onClose();
     }
   };
 

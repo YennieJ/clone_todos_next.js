@@ -1,13 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import { Todo } from "@/types";
-
+import React, { useState, FormEvent } from "react";
 import {
   Button,
   ModalHeader,
@@ -16,22 +7,25 @@ import {
   Spinner,
 } from "@nextui-org/react";
 
+import axiosInstance from "@/data/axiosInstance";
+
+import { Todo } from "@/types";
+import { alertFail, alertSuccess } from "@/app/utils/alert";
+
 const DeleteRoutineForm = ({
   focusedTodo,
   onClose,
+  fetchTodos,
 }: {
   focusedTodo: Todo;
   onClose: () => void;
+  fetchTodos: () => Promise<void>;
 }) => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
-  const router = useRouter();
-
-  const notifySuccessEvent = (meg: string) => toast.success(meg);
-
   // 할일 삭제 함수
   const deleteATodoHandler = async (
-    e: React.FormEvent<HTMLFormElement>,
+    e: FormEvent<HTMLFormElement>,
     id: string,
     onClose: () => void
   ) => {
@@ -41,27 +35,19 @@ const DeleteRoutineForm = ({
     // delay
     await new Promise((f) => setTimeout(f, 1000));
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${id}`,
-        {
-          method: "delete",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
+      const response = await axiosInstance.delete(`/api/${id}`);
+      if (response.status === 200) {
+        alertSuccess("할일이 삭제 되었습니다.");
+        fetchTodos();
+      } else {
         throw new Error("할일 삭제에 실패했습니다.");
       }
+    } catch (error: any) {
+      error.message === "Request failed with status code 404" &&
+        alertFail("할일 추가에 실패했습니다.");
+    } finally {
+      setIsDeleteLoading(false);
       onClose();
-      router.refresh();
-
-      // alert 모달창
-      notifySuccessEvent("할일이 삭제 되었습니다.");
-    } catch (error) {
-      console.error(error);
     }
   };
   return (
