@@ -46,8 +46,8 @@ const EditRoutineForm = ({
 
     const updatedRoutine = {
       id: focusedRoutine.id,
-      title: editedTitle,
-      memo: editedMemo,
+      title: editedTitle.trim(),
+      memo: editedMemo?.trim(),
       is_done: editedIsDone,
       selected_at: editedTime,
     };
@@ -140,9 +140,9 @@ const EditRoutineForm = ({
             variant="flat"
             isDisabled={
               editedTitle.trim() === "" ||
-              (focusedRoutine.title === editedTitle &&
+              (focusedRoutine.title === editedTitle.trim() &&
                 focusedRoutine.is_done === editedIsDone &&
-                focusedRoutine.memo === editedMemo)
+                focusedRoutine.memo === editedMemo?.trim())
             }
           >
             {isEditLoading ? <Spinner color="warning" /> : "수정"}
