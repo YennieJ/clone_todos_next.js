@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchRoutines, addARoutine } from "@/data/firestore";
+import { fetchRoutines, addARoutine } from "@/data/routine";
 import { getAuth, customInitApp } from "@/firebase/server";
 
 // 할일 목록 가져오기
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(errMsg, { status: 422 });
   }
 
-  const addedRoutine = await addARoutine({ uid, title, memo, selected_at });
+  const addedRoutine = await addARoutine(uid, { title, memo, selected_at });
 
   const response = {
     message: "success add routine",

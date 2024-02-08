@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "@/firebase/server";
-import { fetchARoutine, deleteARoutine, editARoutine } from "@/data/firestore";
+import { fetchARoutine, deleteARoutine, editARoutine } from "@/data/routine";
 
 // 할일 단일 조회
 export async function GET(
