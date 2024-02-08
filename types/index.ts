@@ -23,3 +23,15 @@ export type FocusedRoutineType = {
   focusedRoutine: Routine | null;
   modalType: CustomModalType;
 };
+
+export type Header = {
+  startTime: string;
+  description: string;
+};
+
+export type HeaderModalType = "addHeader" | "editHeader" | "deleteHeader";
+
+export type FocusHeaderType = {
+  focusedHeader: Header | null;
+  modalType: HeaderModalType;
+};
