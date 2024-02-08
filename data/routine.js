@@ -34,7 +34,7 @@ export async function fetchRoutines(uid) {
 }
 
 // 할일 추가
-export async function addARoutine({ uid, title, memo, selected_at }) {
+export async function addARoutine(uid, { title, memo, selected_at }) {
   const userRoutineRef = doc(collection(db, `users/${uid}/routine`));
 
   const newRoutineData = {
