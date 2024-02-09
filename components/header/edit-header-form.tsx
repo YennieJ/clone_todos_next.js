@@ -12,7 +12,6 @@ import {
 
 import axiosInstance from "@/data/axiosInstance";
 
-import { getCurrentTime } from "@/app/utils/fomat-time";
 import { alertSuccess, alertFail } from "@/app/utils/alert";
 import { Header } from "@/types";
 
@@ -74,7 +73,7 @@ const EditHeaderForm = ({
             labelPlacement="outside"
             defaultValue={focusedHeader.startTime}
             onValueChange={(changedInput) => {
-              setEditedTime(changedInput);
+              setEditedTime(`${changedInput}:00`);
             }}
           />
           <Textarea
