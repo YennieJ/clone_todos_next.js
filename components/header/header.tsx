@@ -108,7 +108,7 @@ const Heaer = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 mb-4 rounded-2xl shadow-[0px_0px_5px_0px_rgba(0,0,0,0.02),0px_2px_10px_0px_rgba(0,0,0,0.06),0px_0px_1px_0px_rgba(0,0,0,0.3)]">
+    <div className="p-4 z-0 flex flex-col relative justify-between gap-4 bg-content1 overflow-auto rounded-large shadow-small w-full">
       {header.description ? (
         <>
           <p className="text-2xl font-medium">현재 시간 {currentTime}</p>
