@@ -11,7 +11,7 @@ import {
   Textarea,
   Button,
 } from "@nextui-org/react";
-import { DeleteIcon, EditIcon } from "@/components/icons";
+import { DeleteIcon, EditIcon, PlayIcon } from "@/components/icons";
 
 import AddHeaderForm from "./add-header-form";
 import EditHeaderForm from "./edit-header-form";
@@ -98,13 +98,20 @@ const Heaer = () => {
   };
 
   return (
-    <div className="border">
+    <div className="flex flex-col gap-4 p-4 mb-4 rounded-2xl shadow-[0px_0px_5px_0px_rgba(0,0,0,0.02),0px_2px_10px_0px_rgba(0,0,0,0.06),0px_0px_1px_0px_rgba(0,0,0,0.3)]">
       {header.description ? (
         <>
-          <h2>현재시간{currentTime}</h2>
-
-          <button onClick={speechHandler}>speech</button>
-          <div className="relative flex justify-end items-center gap-2">
+          <p className="text-2xl font-medium">현재 시간 {currentTime}</p>
+          <div className="flex justify-end items-baseline gap-2">
+            <Button
+              color="warning"
+              variant="flat"
+              startContent={<PlayIcon />}
+              className="w-full"
+              onPress={speechHandler}
+            >
+              speech
+            </Button>
             <Tooltip content="Edit Header">
               <span
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"

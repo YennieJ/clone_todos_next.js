@@ -50,7 +50,7 @@ function SignUp() {
   };
 
   return (
-    <section className="flex flex-col items-center space-y-8 ">
+    <section className="flex flex-col items-center space-y-8 pt-10">
       <h1 className={title()}>SignUp</h1>
       <form
         className="w-96 p-10 space-y-10 border-medium border-default-200 rounded"

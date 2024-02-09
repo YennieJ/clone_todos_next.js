@@ -34,6 +34,8 @@ const AddHeaderForm = ({
 
   const consent = localStorage.getItem("voiceConsent");
 
+  console.log(consent);
+
   const addHeaderHandler = async (e: any) => {
     e.preventDefault();
 
@@ -50,6 +52,7 @@ const AddHeaderForm = ({
       if (response.status === 201) {
         alertSuccess("머릿말이 추가 되었습니다.");
         fetchHeader();
+        localStorage.setItem("voiceConsent", "true");
       } else {
         throw new Error("머릿말 추가에 실패했습니다.");
       }

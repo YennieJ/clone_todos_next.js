@@ -82,12 +82,13 @@ export default function Home() {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-lg text-center justify-center">
-        <div className="flex flex-col space-y-8">
-          <h1 className={title()}>My Routine</h1>
-          <Header />
-          <div className="text-right">
+    <section className="flex flex-col items-center justify-center gap-4 mb-8">
+      {/* <div className="inline-block max-w-lg text-center justify-center"> */}
+      <div className="flex flex-col text-center sm:w-96">
+        <h1 className={`${title()} mb-10`}>My Routine</h1>
+        <Header />
+        <div>
+          <div className="text-right mb-2">
             <Button
               isIconOnly
               size="sm"
@@ -97,9 +98,8 @@ export default function Home() {
               <PlusIcon />
             </Button>
           </div>
-
           {/* 할일 목록을 표시하는 테이블 */}
-          <Table aria-label="routine Table">
+          <Table aria-label="routine Table" className="">
             <TableHeader>
               <TableColumn>완료</TableColumn>
               <TableColumn>생성일</TableColumn>
@@ -177,6 +177,7 @@ export default function Home() {
           />
         </div>
       </div>
+      {/* </div> */}
     </section>
   );
 }
