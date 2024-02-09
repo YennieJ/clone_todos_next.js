@@ -7,6 +7,9 @@ import { Navbar } from "@/components/navbar";
 import clsx from "clsx";
 import { AuthContextProvider } from "./authContextProvider";
 
+import { Link } from "@nextui-org/react";
+import { GithubIcon } from "@/components/icons";
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -47,16 +50,15 @@ export default function RootLayout({
                 {children}
               </main>
               <footer className="w-full flex items-center justify-center py-3">
-                FOOTER
-                {/* <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
-                title="nextui.org homepage"
-              >
-                <span className="text-default-600">Powered by</span>
-                <p className="text-primary">NextUI</p>
-              </Link> */}
+                <Link
+                  isExternal
+                  showAnchorIcon
+                  className="flex items-center gap-1 text-current"
+                  href="https://github.com/YennieJ/routine_next.js"
+                  anchorIcon={<GithubIcon />}
+                >
+                  YennieJ Github
+                </Link>
               </footer>
             </div>
           </AuthContextProvider>
