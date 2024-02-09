@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
-export const speakText = (text: any) => {
+export const speakText = (text: string, onEndCallback?: any) => {
   if (typeof window !== "undefined" && window.speechSynthesis) {
     const utterance = new SpeechSynthesisUtterance(text);
+    utterance.onend = onEndCallback;
     window.speechSynthesis.speak(utterance);
   }
 };

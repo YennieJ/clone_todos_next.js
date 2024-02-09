@@ -34,10 +34,12 @@ const AddHeaderForm = ({
 
   const consent = localStorage.getItem("voiceConsent");
 
-  console.log(consent);
-
   const addHeaderHandler = async (e: any) => {
     e.preventDefault();
+
+    if (isAddLoading) {
+      return;
+    }
 
     setIsAddLoading(true);
 

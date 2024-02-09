@@ -23,6 +23,10 @@ const DeleteHeaderForm = ({
 
   const deleteHeaderHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isDeleteLoading) {
+      return;
+    }
     setIsDeleteLoading(true);
     // delay
     await new Promise((f) => setTimeout(f, 1000));

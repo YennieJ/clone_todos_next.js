@@ -33,6 +33,10 @@ const DeleteRoutineForm = ({
   ) => {
     e.preventDefault();
 
+    if (isDeleteLoading) {
+      return;
+    }
+
     setIsDeleteLoading(true);
     // delay
     await new Promise((f) => setTimeout(f, 1000));

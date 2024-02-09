@@ -39,6 +39,10 @@ const AddRoutineForm = ({
       selected_at: time,
     };
 
+    if (isAddLoading) {
+      return;
+    }
+
     setIsAddLoading(true);
 
     // delay

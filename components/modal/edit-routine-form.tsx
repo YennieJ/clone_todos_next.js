@@ -52,6 +52,10 @@ const EditRoutineForm = ({
       selected_at: editedTime,
     };
 
+    if (isEditLoading) {
+      return;
+    }
+
     setIsEditLoading(true);
 
     // delay

@@ -15,6 +15,7 @@ import {
   Tooltip,
   Checkbox,
   Button,
+  Spinner,
 } from "@nextui-org/react";
 import { DeleteIcon, EyeIcon, EditIcon, PlusIcon } from "@/components/icons";
 
@@ -34,6 +35,8 @@ export default function Home() {
     focusedRoutine: null,
     modalType: "detail",
   });
+  const [checkedId, setCheckedId] = useState("");
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // modalHandler
@@ -65,25 +68,31 @@ export default function Home() {
     checkedRoutine: Routine,
     checkIsDone: boolean
   ) => {
-    const response = await axiosInstance.patch(
-      `/api/routine/${checkedRoutine.id}`,
-      checkedRoutine
-    );
-
-    if (response.status === 200) {
-      setRoutines((prevRoutines) =>
-        prevRoutines.map((routine) =>
-          routine.id === checkedRoutine.id
-            ? { ...routine, is_done: checkIsDone }
-            : routine
-        )
+    setCheckedId(checkedRoutine.id);
+    try {
+      const response = await axiosInstance.patch(
+        `/api/routine/${checkedRoutine.id}`,
+        checkedRoutine
       );
+
+      if (response.status === 200) {
+        setRoutines((prevRoutines) =>
+          prevRoutines.map((routine) =>
+            routine.id === checkedRoutine.id
+              ? { ...routine, is_done: checkIsDone }
+              : routine
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Failed to update routine", error);
+    } finally {
+      setCheckedId("");
     }
   };
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 mb-8">
-      {/* <div className="inline-block max-w-lg text-center justify-center"> */}
       <div className="flex flex-col text-center sm:w-96">
         <h1 className={`${title()} mb-10`}>My Routine</h1>
         <Header />
@@ -99,7 +108,7 @@ export default function Home() {
             </Button>
           </div>
           {/* 할일 목록을 표시하는 테이블 */}
-          <Table aria-label="routine Table" className="">
+          <Table aria-label="routine Table">
             <TableHeader>
               <TableColumn>완료</TableColumn>
               <TableColumn>생성일</TableColumn>
@@ -113,13 +122,22 @@ export default function Home() {
                   className={isDoneUI(routine.is_done!)}
                 >
                   <TableCell>
-                    <Checkbox
-                      color="warning"
-                      isSelected={routine.is_done}
-                      onValueChange={(checkIsDone) => {
-                        checkRoutineHandler(routine, checkIsDone);
-                      }}
-                    />
+                    {checkedId === routine.id ? (
+                      <Spinner
+                        size="sm"
+                        color="warning"
+                        className="align-top"
+                      />
+                    ) : (
+                      <Checkbox
+                        className="align-top"
+                        color="warning"
+                        isSelected={routine.is_done}
+                        onValueChange={(checkIsDone) => {
+                          checkRoutineHandler(routine, checkIsDone);
+                        }}
+                      />
+                    )}
                   </TableCell>
                   <TableCell>{formatTime(routine.selected_at)}</TableCell>
                   <TableCell>{routine.title}</TableCell>
@@ -177,7 +195,6 @@ export default function Home() {
           />
         </div>
       </div>
-      {/* </div> */}
     </section>
   );
 }

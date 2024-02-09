@@ -39,6 +39,10 @@ const EditHeaderForm = ({
       description: editedDescription,
     };
 
+    if (isEditLoading) {
+      return;
+    }
+
     setIsEditLoading(true);
 
     // delay

@@ -10,6 +10,7 @@ import {
   Input,
   Textarea,
   Button,
+  Progress,
 } from "@nextui-org/react";
 import { DeleteIcon, EditIcon, PlayIcon } from "@/components/icons";
 
@@ -20,7 +21,7 @@ import { FocusHeaderType, Header, HeaderModalType } from "@/types";
 import { speakText, checkTimeAndSpeak } from "@/app/utils/getSpeech";
 
 const Heaer = () => {
-  // 데이터 / 모달 / 모달 데이터 / 음성 동의
+  // 데이터 / 모달 / 모달 데이터 / 음성 동의 / 재생 중
   const [header, setHeader] = useState({ startTime: "", description: "" });
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [currentModalData, setCurrentModalData] = useState<FocusHeaderType>({
@@ -28,6 +29,7 @@ const Heaer = () => {
     modalType: "addHeader",
   });
   const [isConsented, setIsConsented] = useState(false);
+  const [isSpeech, setIsSpeech] = useState(false);
 
   const toggleConsent = () => setIsConsented(!isConsented);
 
@@ -57,7 +59,15 @@ const Heaer = () => {
   };
 
   const speechHandler = () => {
-    speakText(header.description);
+    if (isSpeech) {
+      return;
+    }
+
+    setIsSpeech(true);
+
+    speakText(header.description, () => {
+      setIsSpeech(false);
+    });
   };
 
   const modalHandler = (header: Header | null, key: HeaderModalType) => {
@@ -110,7 +120,17 @@ const Heaer = () => {
               className="w-full"
               onPress={speechHandler}
             >
-              speech
+              {isSpeech ? (
+                <Progress
+                  size="sm"
+                  color="warning"
+                  isIndeterminate
+                  aria-label="Loading..."
+                  className="w-1/6"
+                />
+              ) : (
+                "speech"
+              )}
             </Button>
             <Tooltip content="Edit Header">
               <span
