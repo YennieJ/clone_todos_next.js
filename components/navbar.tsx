@@ -29,6 +29,7 @@ export const Navbar = () => {
 
     if (response.status === 200) {
       router.push("/login");
+      localStorage.removeItem("voiceConsent");
     }
   };
 
