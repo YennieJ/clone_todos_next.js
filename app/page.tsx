@@ -28,6 +28,7 @@ import Header from "@/components/header/header";
 import { title } from "@/components/primitives";
 import { formatTime } from "@/app/utils/fomat-time";
 import { isDoneUI } from "@/app/utils/styleUtils";
+import LoadingPage from "@/components/loadingPage";
 
 export default function Home() {
   const [routines, setRoutines] = useState<Routine[]>([]);
@@ -36,6 +37,8 @@ export default function Home() {
     modalType: "detail",
   });
   const [checkedId, setCheckedId] = useState("");
+
+  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -56,11 +59,14 @@ export default function Home() {
   }, []);
 
   const fetchRoutines = async () => {
+    setIsDataLoading(true);
     try {
       const response = await axiosInstance.get("/api/routine");
       setRoutines(response.data.data);
     } catch (error) {
       console.error("Failed to fetch routines", error);
+    } finally {
+      setIsDataLoading(false); // 데이터 요청이 완료되거나 실패했을 때 로딩 상태 비활성화
     }
   };
 
@@ -92,109 +98,117 @@ export default function Home() {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 mb-8">
-      <div className="flex flex-col text-center sm:w-96">
-        <h1 className={`${title()} mb-10`}>My Routine</h1>
-        <Header />
-        <div>
-          <div className="text-right mb-2">
-            <Button
-              isIconOnly
-              size="sm"
-              variant="light"
-              onPress={() => modalHandler(null, "addModal")}
-            >
-              <PlusIcon />
-            </Button>
-          </div>
-          {/* 할일 목록을 표시하는 테이블 */}
-          <Table aria-label="routine Table">
-            <TableHeader>
-              <TableColumn>완료</TableColumn>
-              <TableColumn>생성일</TableColumn>
-              <TableColumn>할일 내용</TableColumn>
-              <TableColumn>ACTIONS</TableColumn>
-            </TableHeader>
-            <TableBody emptyContent="새로운 루틴을 추가하세요.">
-              {routines!.map((routine) => (
-                <TableRow
-                  key={routine.id}
-                  className={isDoneUI(routine.is_done!)}
+    <>
+      {isDataLoading ? (
+        <LoadingPage inner={true} />
+      ) : (
+        <section className="flex flex-col items-center justify-center gap-4 mb-8">
+          <div className="flex flex-col text-center sm:w-96">
+            <h1 className={`${title()} mb-10`}>My Routine</h1>
+
+            <Header />
+            <div>
+              <div className="text-right mb-2">
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="light"
+                  onPress={() => modalHandler(null, "addModal")}
                 >
-                  <TableCell>
-                    {checkedId === routine.id ? (
-                      <Spinner
-                        size="sm"
-                        color="warning"
-                        className="align-top"
-                      />
-                    ) : (
-                      <Checkbox
-                        className="align-top"
-                        color="warning"
-                        isSelected={routine.is_done}
-                        onValueChange={(checkIsDone) => {
-                          checkRoutineHandler(routine, checkIsDone);
-                        }}
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell>{formatTime(routine.selected_at)}</TableCell>
-                  <TableCell>{routine.title}</TableCell>
-                  <TableCell>
-                    <div className="relative flex justify-end items-center gap-2">
-                      <Tooltip content="Details">
-                        <span
-                          className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                          onClick={() => {
-                            modalHandler(routine, "detailModal");
-                          }}
-                        >
-                          <EyeIcon />
-                        </span>
-                      </Tooltip>
-                      <Tooltip content="Edit Routine">
-                        <span
-                          className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                          onClick={() => {
-                            modalHandler(routine, "editModal");
-                          }}
-                        >
-                          <EditIcon />
-                        </span>
-                      </Tooltip>
-                      <Tooltip color="danger" content="Delete Routine">
-                        <span
-                          className="text-lg text-danger cursor-pointer active:opacity-50"
-                          onClick={() => {
-                            modalHandler(routine, "deleteModal");
-                          }}
-                        >
-                          <DeleteIcon />
-                        </span>
-                      </Tooltip>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {/* 상세,수정,삭제 모달 */}
-          <CustomModal
-            currentModalData={currentModalData}
-            isOpen={isOpen}
-            onOpenChange={onOpenChange}
-            fetchRoutines={fetchRoutines}
-          />
-          {/* alert 컴포넌트 */}
-          <ToastContainer
-            theme="dark"
-            pauseOnFocusLoss={false}
-            pauseOnHover={false}
-            autoClose={2000}
-          />
-        </div>
-      </div>
-    </section>
+                  <PlusIcon />
+                </Button>
+              </div>
+              {/* 할일 목록을 표시하는 테이블 */}
+              <Table aria-label="routine Table">
+                <TableHeader>
+                  <TableColumn>완료</TableColumn>
+                  <TableColumn>생성일</TableColumn>
+                  <TableColumn>할일 내용</TableColumn>
+                  <TableColumn>ACTIONS</TableColumn>
+                </TableHeader>
+                <TableBody emptyContent="새로운 루틴을 추가하세요.">
+                  {routines.map((routine) => (
+                    <TableRow
+                      key={routine.id}
+                      className={isDoneUI(routine.is_done!)}
+                    >
+                      <TableCell>
+                        {checkedId === routine.id ? (
+                          <Spinner
+                            size="sm"
+                            color="warning"
+                            className="align-top"
+                          />
+                        ) : (
+                          <Checkbox
+                            className="align-top"
+                            color="warning"
+                            isSelected={routine.is_done}
+                            onValueChange={(checkIsDone) => {
+                              checkRoutineHandler(routine, checkIsDone);
+                            }}
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>{formatTime(routine.selected_at)}</TableCell>
+                      <TableCell>{routine.title}</TableCell>
+                      <TableCell>
+                        <div className="relative flex justify-end items-center gap-2">
+                          <Tooltip content="Details">
+                            <span
+                              className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                              onClick={() => {
+                                modalHandler(routine, "detailModal");
+                              }}
+                            >
+                              <EyeIcon />
+                            </span>
+                          </Tooltip>
+                          <Tooltip content="Edit Routine">
+                            <span
+                              className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                              onClick={() => {
+                                modalHandler(routine, "editModal");
+                              }}
+                            >
+                              <EditIcon />
+                            </span>
+                          </Tooltip>
+                          <Tooltip color="danger" content="Delete Routine">
+                            <span
+                              className="text-lg text-danger cursor-pointer active:opacity-50"
+                              onClick={() => {
+                                modalHandler(routine, "deleteModal");
+                              }}
+                            >
+                              <DeleteIcon />
+                            </span>
+                          </Tooltip>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </section>
+      )}
+      {/* 상세,수정,삭제 모달 */}
+
+      <CustomModal
+        currentModalData={currentModalData}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        fetchRoutines={fetchRoutines}
+      />
+      {/* alert 컴포넌트 */}
+      <ToastContainer
+        theme="dark"
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+        autoClose={2000}
+      />
+    </>
   );
 }
