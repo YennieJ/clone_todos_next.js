@@ -11,6 +11,7 @@ import {
   Textarea,
   Button,
   Progress,
+  Skeleton,
 } from "@nextui-org/react";
 import { DeleteIcon, EditIcon, PlayIcon } from "@/components/icons";
 
@@ -30,6 +31,7 @@ const Heaer = () => {
   });
   const [isConsented, setIsConsented] = useState(false);
   const [isSpeech, setIsSpeech] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const toggleConsent = () => setIsConsented(!isConsented);
 
@@ -46,6 +48,7 @@ const Heaer = () => {
   }, []);
 
   const fetchHeader = async () => {
+    setIsDataLoaded(true);
     try {
       const response = await axiosInstance.get("/api/header");
       if (response.status === 204) {
@@ -55,6 +58,8 @@ const Heaer = () => {
       }
     } catch (error) {
       console.error("Failed to fetch header", error);
+    } finally {
+      setIsDataLoaded(false);
     }
   };
 
@@ -109,7 +114,11 @@ const Heaer = () => {
 
   return (
     <div className="p-4 mb-4 flex flex-col justify-between gap-4 bg-content1 overflow-auto rounded-large shadow-small">
-      {header.description ? (
+      {isDataLoaded ? (
+        <Skeleton className="rounded-lg">
+          <div className="h-24 rounded-lg bg-default-300"></div>
+        </Skeleton>
+      ) : header.description ? (
         <>
           <p className="text-2xl font-medium">현재 시간 {currentTime}</p>
           <div className="flex justify-end items-baseline gap-2">
@@ -180,7 +189,6 @@ const Heaer = () => {
           머릿말 추가하기
         </Button>
       )}
-
       <Modal
         placement="center"
         backdrop="blur"
