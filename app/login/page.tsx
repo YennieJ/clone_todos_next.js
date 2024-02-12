@@ -2,7 +2,7 @@
 
 import React, { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Input, Button, Spinner } from "@nextui-org/react";
+import { Input, Button, Spinner, Checkbox } from "@nextui-org/react";
 
 import { logIn } from "@/data/auth";
 import axiosInstance from "@/data/axiosInstance";
@@ -16,6 +16,7 @@ function LogIn() {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isLogInLoading, setIsLogInLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [isTestAccount, setIsTestAccount] = useState(false);
 
   const router = useRouter();
 
@@ -26,11 +27,14 @@ function LogIn() {
     setIsLogInLoading(true);
 
     try {
-      const authUser = await logIn(email, password);
+      const authUser = await logIn(
+        isTestAccount ? "test@gmail.com" : email,
+        isTestAccount ? "test123" : password
+      );
       if (authUser) {
         const response = await axiosInstance.post("/api/auth", {
-          email,
-          password,
+          email: isTestAccount ? "test@gmail.com" : email,
+          password: isTestAccount ? "test123" : password,
         });
         if (response.status === 200) {
           router.push("/");
@@ -64,6 +68,8 @@ function LogIn() {
             setEmail(changedInput);
             changedInput && setError("");
           }}
+          value={isTestAccount ? "test@gmail.com" : email}
+          readOnly={isTestAccount}
         />
         <Input
           type={isPasswordVisible ? "text" : "password"}
@@ -75,6 +81,8 @@ function LogIn() {
           errorMessage={error}
           variant="bordered"
           labelPlacement="outside"
+          value={isTestAccount ? "test123" : password}
+          readOnly={isTestAccount}
           onValueChange={(changedInput) => {
             setPassword(changedInput);
             changedInput && setError("");
@@ -93,12 +101,17 @@ function LogIn() {
             </button>
           }
         />
+        <Checkbox isSelected={isTestAccount} onValueChange={setIsTestAccount}>
+          체험하기
+        </Checkbox>
         <Button
           type="submit"
           color="warning"
           variant="flat"
           fullWidth
-          isDisabled={email.trim() === "" || password.trim() === ""}
+          isDisabled={
+            !isTestAccount && (email.trim() === "" || password.trim() === "")
+          }
         >
           {isLogInLoading ? <Spinner color="warning" /> : "Sign In"}
         </Button>
