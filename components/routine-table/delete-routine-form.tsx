@@ -10,19 +10,20 @@ import {
 } from "@nextui-org/react";
 
 import axiosInstance from "@/data/axiosInstance";
-
 import { Routine } from "@/types";
 import { alertFail, alertSuccess } from "@/app/utils/alert";
+
+interface DeleteRoutinProps {
+  focusedRoutine: Routine;
+  onClose: () => void;
+  fetchRoutines: () => Promise<void>;
+}
 
 const DeleteRoutineForm = ({
   focusedRoutine,
   onClose,
   fetchRoutines,
-}: {
-  focusedRoutine: Routine;
-  onClose: () => void;
-  fetchRoutines: () => Promise<void>;
-}) => {
+}: DeleteRoutinProps) => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   // 할일 삭제 함수

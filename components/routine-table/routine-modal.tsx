@@ -6,17 +6,19 @@ import AddRoutineForm from "./add-routine-form";
 import EditRoutineForm from "./edit-routine-form";
 import DeleteRoutineForm from "./delete-routine-form";
 
-const CustomModal = ({
-  currentModalData,
-  isOpen,
-  onOpenChange,
-  fetchRoutines,
-}: {
+interface RoutineModalProps {
   currentModalData: FocusedRoutineType;
   isOpen: boolean;
   onOpenChange: () => void;
   fetchRoutines: () => Promise<void>;
-}) => {
+}
+
+const RoutineModal = ({
+  currentModalData,
+  isOpen,
+  onOpenChange,
+  fetchRoutines,
+}: RoutineModalProps) => {
   const getModalContent = (
     modalData: FocusedRoutineType,
     onClose: () => void
@@ -68,4 +70,4 @@ const CustomModal = ({
   );
 };
 
-export default CustomModal;
+export default RoutineModal;

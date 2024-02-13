@@ -1,5 +1,4 @@
 import React, { useState, FormEvent } from "react";
-
 import {
   Input,
   Button,
@@ -12,20 +11,21 @@ import {
 } from "@nextui-org/react";
 
 import axiosInstance from "@/data/axiosInstance";
-
 import { Routine } from "@/types";
 import { alertFail, alertSuccess } from "@/app/utils/alert";
+
+interface EditRoutineProps {
+  focusedRoutine: Routine;
+  onClose: () => void;
+  fetchRoutines: () => Promise<void>;
+}
 
 const EditRoutineForm = ({
   focusedRoutine,
   onClose,
   fetchRoutines,
-}: {
-  focusedRoutine: Routine;
-  onClose: () => void;
-  fetchRoutines: () => Promise<void>;
-}) => {
-  // 수정된 시간,할일,완료,메모 입력
+}: EditRoutineProps) => {
+  // 수정된 시간,할일,완료,메모 입력,업데이트 로딩
   const [editedTime, setEditedTime] = useState<string>(
     focusedRoutine.selected_at
   );
@@ -36,8 +36,6 @@ const EditRoutineForm = ({
   const [editedMemo, setEditedMemo] = useState<string | undefined>(
     focusedRoutine.memo
   );
-
-  // 업데이트 로딩
   const [isEditLoading, setIsEditLoading] = useState(false);
 
   // 할일 수정 함수

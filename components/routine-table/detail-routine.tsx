@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Button,
   ModalHeader,
@@ -11,13 +10,12 @@ import {
 
 import { Routine } from "@/types";
 
-const DetailRoutine = ({
-  focusedRoutine,
-  onClose,
-}: {
+interface DetailRoutineProps {
   focusedRoutine: Routine;
   onClose: () => void;
-}) => {
+}
+
+const DetailRoutine = ({ focusedRoutine, onClose }: DetailRoutineProps) => {
   return (
     <>
       <ModalHeader className="flex flex-col gap-1">

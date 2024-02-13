@@ -1,12 +1,6 @@
 "use client";
 
-import React from "react";
-
-import { Key, useEffect, useState } from "react";
-
-import axiosInstance from "@/data/axiosInstance";
-import { CustomModalType, FocusedRoutineType, Routine } from "@/types";
-
+import React, { Key, useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -23,9 +17,11 @@ import {
 } from "@nextui-org/react";
 import { DeleteIcon, EyeIcon, EditIcon, PlusIcon } from "@/components/icons";
 
-import { formatTime } from "@/app/utils/fomat-time";
+import axiosInstance from "@/data/axiosInstance";
+import { Routine, FocusedRoutineType, CustomModalType } from "@/types";
+import { formatTime } from "@/app/utils/format-time";
 import { isDoneUI } from "@/app/utils/styleUtils";
-import CustomModal from "./modal/custom-modal";
+import RoutineModal from "./routine-modal";
 
 const RoutineTable = () => {
   const [routines, setRoutines] = useState<Routine[]>([]);
@@ -34,6 +30,7 @@ const RoutineTable = () => {
     modalType: "detail",
   });
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [checkedId, setCheckedId] = useState("");
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -52,8 +49,6 @@ const RoutineTable = () => {
       setIsDataLoaded(false);
     }
   };
-
-  const [checkedId, setCheckedId] = useState("");
 
   const modalHandler = (
     routine: Routine | null,
@@ -187,7 +182,7 @@ const RoutineTable = () => {
         </div>
       )}
 
-      <CustomModal
+      <RoutineModal
         currentModalData={currentModalData}
         isOpen={isOpen}
         onOpenChange={onOpenChange}

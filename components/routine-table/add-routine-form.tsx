@@ -10,23 +10,18 @@ import {
 } from "@nextui-org/react";
 
 import axiosInstance from "@/data/axiosInstance";
-
-import { getCurrentTime } from "@/app/utils/fomat-time";
+import { getCurrentTime } from "@/app/utils/format-time";
 import { alertSuccess, alertFail } from "@/app/utils/alert";
 
-const AddRoutineForm = ({
-  onClose,
-  fetchRoutines,
-}: {
+interface AddRoutineFormProps {
   onClose: () => void;
   fetchRoutines: () => Promise<void>;
-}) => {
+}
+const AddRoutineForm = ({ onClose, fetchRoutines }: AddRoutineFormProps) => {
   // 할일 입력
   const [time, setTime] = useState<string>(getCurrentTime());
   const [title, setTitle] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
-
-  // 업데이트 로딩
   const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
 
   // 할일 추가 함수
