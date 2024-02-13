@@ -14,7 +14,7 @@ import {
 import axiosInstance from "@/data/axiosInstance";
 import { DeleteIcon, EditIcon, PlayIcon } from "@/components/icons";
 import { FocusHeaderType, Header, HeaderModalType } from "@/types";
-import { speakText, checkTimeAndSpeak } from "@/app/utils/getSpeech";
+import { speakText, useCheckTimeAndSpeak } from "@/app/utils/getSpeech";
 import HeaderModal from "./header-modal";
 
 const Heaer = () => {
@@ -53,7 +53,7 @@ const Heaer = () => {
 
   const toggleConsent = () => setIsConsented(!isConsented);
 
-  const currentTime = checkTimeAndSpeak(
+  const currentTime = useCheckTimeAndSpeak(
     header.startTime,
     isConsented,
     header.description

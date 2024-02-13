@@ -8,7 +8,7 @@ export const speakText = (text: string, onEndCallback?: any) => {
   }
 };
 
-export const checkTimeAndSpeak = (
+export const useCheckTimeAndSpeak = (
   targetTime: string,
   isConsented: boolean,
   description: string
@@ -16,7 +16,7 @@ export const checkTimeAndSpeak = (
   const [currentTime, setCurrentTime] = useState<string>("");
 
   useEffect(() => {
-    const checkTimeAndSpeak = () => {
+    const intervalId = setInterval(() => {
       const now = new Date();
       const timeString = now.toLocaleTimeString("it-IT", { hour12: false });
       setCurrentTime(timeString.substring(0, 8));
@@ -24,9 +24,7 @@ export const checkTimeAndSpeak = (
       if (timeString.substring(0, 8) === targetTime && isConsented) {
         speakText(description);
       }
-    };
-
-    const intervalId = setInterval(checkTimeAndSpeak, 1000);
+    }, 1000);
 
     return () => clearInterval(intervalId);
   }, [isConsented, targetTime]);
