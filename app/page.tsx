@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { title } from "@/components/primitives";
 
 import Header from "@/components/header/header";
-import RoutineTable from "@/components/routine-table";
+import RoutineTable from "@/components/routine-table/routine-table";
 
 export default function Home() {
   return (

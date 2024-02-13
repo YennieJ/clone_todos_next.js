@@ -1,5 +1,4 @@
 import React, { FormEvent, useState } from "react";
-
 import {
   Button,
   Spinner,
@@ -9,16 +8,14 @@ import {
 } from "@nextui-org/react";
 
 import axiosInstance from "@/data/axiosInstance";
-
 import { alertSuccess, alertFail } from "@/app/utils/alert";
 
-const DeleteHeaderForm = ({
-  onClose,
-  fetchHeader,
-}: {
+interface DeletedHeaderFormProps {
   onClose: () => void;
   fetchHeader: () => Promise<void>;
-}) => {
+}
+
+const DeleteHeaderForm = ({ onClose, fetchHeader }: DeletedHeaderFormProps) => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   const deleteHeaderHandler = async (e: FormEvent<HTMLFormElement>) => {
@@ -48,7 +45,7 @@ const DeleteHeaderForm = ({
   };
 
   return (
-    <div>
+    <>
       <ModalHeader className="flex flex-col gap-1">머릿말</ModalHeader>
       <form onSubmit={deleteHeaderHandler}>
         <ModalBody>머릿말을 삭제하시겠습니까?</ModalBody>
@@ -61,7 +58,7 @@ const DeleteHeaderForm = ({
           </Button>
         </ModalFooter>
       </form>
-    </div>
+    </>
   );
 };
 

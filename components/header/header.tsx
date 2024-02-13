@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axiosInstance from "@/data/axiosInstance";
-import { Modal, ModalContent } from "@nextui-org/react";
-
 import {
   useDisclosure,
   Tooltip,
@@ -13,33 +10,24 @@ import {
   Progress,
   Skeleton,
 } from "@nextui-org/react";
-import { DeleteIcon, EditIcon, PlayIcon } from "@/components/icons";
 
-import AddHeaderForm from "./add-header-form";
-import EditHeaderForm from "./edit-header-form";
-import DeleteHeaderForm from "./delete-header-form";
+import axiosInstance from "@/data/axiosInstance";
+import { DeleteIcon, EditIcon, PlayIcon } from "@/components/icons";
 import { FocusHeaderType, Header, HeaderModalType } from "@/types";
 import { speakText, checkTimeAndSpeak } from "@/app/utils/getSpeech";
+import HeaderModal from "./header-modal";
 
 const Heaer = () => {
-  // 데이터 / 모달 / 모달 데이터 / 음성 동의 / 재생 중
+  // 데이터 로딩 / 데이터 / 음성 동의 / 음성 재생 / 모달 데이터 / 모달
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [header, setHeader] = useState({ startTime: "", description: "" });
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isConsented, setIsConsented] = useState(false);
+  const [isSpeech, setIsSpeech] = useState(false);
   const [currentModalData, setCurrentModalData] = useState<FocusHeaderType>({
     focusedHeader: null,
     modalType: "addHeader",
   });
-  const [isConsented, setIsConsented] = useState(false);
-  const [isSpeech, setIsSpeech] = useState(false);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-  const toggleConsent = () => setIsConsented(!isConsented);
-
-  const currentTime = checkTimeAndSpeak(
-    header.startTime,
-    isConsented,
-    header.description
-  );
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
     fetchHeader();
@@ -63,13 +51,19 @@ const Heaer = () => {
     }
   };
 
+  const toggleConsent = () => setIsConsented(!isConsented);
+
+  const currentTime = checkTimeAndSpeak(
+    header.startTime,
+    isConsented,
+    header.description
+  );
+
   const speechHandler = () => {
     if (isSpeech) {
       return;
     }
-
     setIsSpeech(true);
-
     speakText(header.description, () => {
       setIsSpeech(false);
     });
@@ -81,35 +75,6 @@ const Heaer = () => {
       focusedHeader: header,
       modalType: key,
     });
-  };
-
-  const renderModalContent = (
-    modalData: FocusHeaderType,
-    onClose: () => void
-  ) => {
-    switch (modalData.modalType) {
-      case "addHeader":
-        return (
-          <AddHeaderForm
-            onClose={onClose}
-            fetchHeader={fetchHeader}
-            isConsented={isConsented}
-            toggleConsent={toggleConsent}
-          />
-        );
-      case "editHeader":
-        return (
-          <EditHeaderForm
-            onClose={onClose}
-            fetchHeader={fetchHeader}
-            focusedHeader={modalData.focusedHeader!}
-          />
-        );
-      case "deleteHeader":
-        return <DeleteHeaderForm onClose={onClose} fetchHeader={fetchHeader} />;
-      default:
-        break;
-    }
   };
 
   return (
@@ -189,16 +154,14 @@ const Heaer = () => {
           머릿말 추가하기
         </Button>
       )}
-      <Modal
-        placement="center"
-        backdrop="blur"
+      <HeaderModal
+        currentModalData={currentModalData}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          {(onClose) => renderModalContent(currentModalData, onClose)}
-        </ModalContent>
-      </Modal>
+        fetchHeader={fetchHeader}
+        isConsented={isConsented}
+        toggleConsent={toggleConsent}
+      />
     </div>
   );
 };

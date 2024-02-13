@@ -12,10 +12,9 @@ import {
   User,
 } from "@nextui-org/react";
 
-import { logOut } from "@/data/auth";
 import axiosInstance from "@/data/axiosInstance";
+import { logOut } from "@/data/auth";
 import { useAuthContext } from "@/app/authContextProvider";
-
 import { ThemeSwitch } from "@/components/theme-switch";
 
 export const Navbar = () => {

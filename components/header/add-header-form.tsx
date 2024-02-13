@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useState, FormEvent } from "react";
 import {
   Input,
   Button,
@@ -12,29 +11,29 @@ import {
 } from "@nextui-org/react";
 
 import axiosInstance from "@/data/axiosInstance";
-
-import { getCurrentHourMinuteSecond } from "@/app/utils/fomat-time";
+import { getCurrentHourMinuteSecond } from "@/app/utils/format-time";
 import { alertSuccess, alertFail } from "@/app/utils/alert";
+
+interface AddHeaderFormProps {
+  onClose: () => void;
+  fetchHeader: () => Promise<void>;
+  isConsented: boolean;
+  toggleConsent: () => void;
+}
 
 const AddHeaderForm = ({
   onClose,
   fetchHeader,
   isConsented,
   toggleConsent,
-}: {
-  onClose: () => void;
-  fetchHeader: () => Promise<void>;
-  isConsented: boolean;
-  toggleConsent: () => void;
-}) => {
+}: AddHeaderFormProps) => {
   const [time, setTime] = useState<string>(getCurrentHourMinuteSecond());
   const [description, setDescription] = useState<string>("");
-
   const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
 
   const consent = localStorage.getItem("voiceConsent");
 
-  const addHeaderHandler = async (e: any) => {
+  const addHeaderHandler = async (e: FormEvent) => {
     e.preventDefault();
 
     if (isAddLoading) {

@@ -1,5 +1,4 @@
 import React, { FormEvent, useState } from "react";
-
 import {
   Input,
   Button,
@@ -11,26 +10,26 @@ import {
 } from "@nextui-org/react";
 
 import axiosInstance from "@/data/axiosInstance";
-
 import { alertSuccess, alertFail } from "@/app/utils/alert";
 import { Header } from "@/types";
+
+interface EditHeaderFormProps {
+  focusedHeader: Header;
+  onClose: () => void;
+  fetchHeader: () => Promise<void>;
+}
 
 const EditHeaderForm = ({
   focusedHeader,
   onClose,
   fetchHeader,
-}: {
-  focusedHeader: Header;
-  onClose: () => void;
-  fetchHeader: () => Promise<void>;
-}) => {
+}: EditHeaderFormProps) => {
   const [editedTime, setEditedTime] = useState<string>(focusedHeader.startTime);
   const [editedDescription, setEditedDescription] = useState<string>(
     focusedHeader.description
   );
-
-  // 업데이트 로딩
   const [isEditLoading, setIsEditLoading] = useState(false);
+
   const editHeaderHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -65,7 +64,7 @@ const EditHeaderForm = ({
   };
 
   return (
-    <div>
+    <>
       <ModalHeader className="flex flex-col gap-1">머릿말 수정</ModalHeader>
       <form onSubmit={editHeaderHandler}>
         <ModalBody>
@@ -112,7 +111,7 @@ const EditHeaderForm = ({
           </Button>
         </ModalFooter>
       </form>
-    </div>
+    </>
   );
 };
 
