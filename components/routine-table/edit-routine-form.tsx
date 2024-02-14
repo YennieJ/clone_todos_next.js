@@ -142,7 +142,8 @@ const EditRoutineForm = ({
             variant="flat"
             isDisabled={
               editedTitle.trim() === "" ||
-              (focusedRoutine.title === editedTitle.trim() &&
+              (focusedRoutine.selected_at === editedTime &&
+                focusedRoutine.title === editedTitle.trim() &&
                 focusedRoutine.is_done === editedIsDone &&
                 focusedRoutine.memo === editedMemo?.trim())
             }
