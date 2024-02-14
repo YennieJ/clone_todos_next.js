@@ -117,7 +117,7 @@ const RoutineTable = () => {
             <TableHeader>
               <TableColumn>완료</TableColumn>
               <TableColumn>생성일</TableColumn>
-              <TableColumn>할일 내용</TableColumn>
+              <TableColumn>루틴 내용</TableColumn>
               <TableColumn>ACTIONS</TableColumn>
             </TableHeader>
             <TableBody emptyContent="새로운 루틴을 추가하세요.">

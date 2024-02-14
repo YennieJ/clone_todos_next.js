@@ -12,7 +12,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-// 모든 할일 가져오기
+// 모든 루틴 가져오기
 export async function fetchRoutines(uid) {
   const userRoutineRef = collection(db, `users/${uid}/routine`);
 
@@ -33,7 +33,7 @@ export async function fetchRoutines(uid) {
   return fetchedRoutines;
 }
 
-// 할일 추가
+// 루틴 추가
 export async function addARoutine(uid, { title, memo, selected_at }) {
   const userRoutineRef = doc(collection(db, `users/${uid}/routine`));
 
@@ -51,7 +51,7 @@ export async function addARoutine(uid, { title, memo, selected_at }) {
   return newRoutineData;
 }
 
-// 단일 할일 조회
+// 단일 루틴 조회
 export async function fetchARoutine(id, uid) {
   if (!id) return null;
 
@@ -69,7 +69,7 @@ export async function fetchARoutine(id, uid) {
   };
 }
 
-// 단일 할일 삭제
+// 단일 루틴 삭제
 export async function deleteARoutine(id, uid) {
   const fetchedRoutine = await fetchARoutine(id, uid);
 
@@ -80,7 +80,7 @@ export async function deleteARoutine(id, uid) {
   return fetchedRoutine;
 }
 
-// 단일 할일 수정
+// 단일 루틴 수정
 export async function editARoutine(
   id,
   uid,

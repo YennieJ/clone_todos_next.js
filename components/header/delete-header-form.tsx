@@ -30,14 +30,14 @@ const DeleteHeaderForm = ({ onClose, fetchHeader }: DeletedHeaderFormProps) => {
     try {
       const response = await axiosInstance.delete(`/api/header`);
       if (response.status === 204) {
-        alertSuccess("할일이 삭제 되었습니다.");
+        alertSuccess("머릿말이 삭제 되었습니다.");
         fetchHeader();
       } else {
-        throw new Error("할일 삭제에 실패했습니다.");
+        throw new Error("머릿말 삭제에 실패했습니다.");
       }
     } catch (error: any) {
       error.message === "Request failed with status code 404" &&
-        alertFail("할일 추가에 실패했습니다.");
+        alertFail("머릿말 추가에 실패했습니다.");
     } finally {
       setIsDeleteLoading(false);
       onClose();
@@ -46,7 +46,7 @@ const DeleteHeaderForm = ({ onClose, fetchHeader }: DeletedHeaderFormProps) => {
 
   return (
     <>
-      <ModalHeader className="flex flex-col gap-1">머릿말</ModalHeader>
+      <ModalHeader className="flex flex-col gap-1">머릿말 삭제</ModalHeader>
       <form onSubmit={deleteHeaderHandler}>
         <ModalBody>머릿말을 삭제하시겠습니까?</ModalBody>
         <ModalFooter>

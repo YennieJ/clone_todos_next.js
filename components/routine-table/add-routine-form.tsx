@@ -18,13 +18,13 @@ interface AddRoutineFormProps {
   fetchRoutines: () => Promise<void>;
 }
 const AddRoutineForm = ({ onClose, fetchRoutines }: AddRoutineFormProps) => {
-  // 할일 입력
+  // 루틴 입력
   const [time, setTime] = useState<string>(getCurrentTime());
   const [title, setTitle] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
 
-  // 할일 추가 함수
+  // 루틴 추가 함수
   const addARoutineHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -46,14 +46,14 @@ const AddRoutineForm = ({ onClose, fetchRoutines }: AddRoutineFormProps) => {
       const response = await axiosInstance.post("/api/routine", newRoutine);
 
       if (response.status === 201) {
-        alertSuccess("할일이 추가 되었습니다.");
+        alertSuccess("루틴이 추가 되었습니다.");
         fetchRoutines();
       } else {
-        throw new Error("할일 추가에 실패했습니다.");
+        throw new Error("루틴 추가에 실패했습니다.");
       }
     } catch (error: any) {
       error.message === "Request failed with status code 404" &&
-        alertFail("할일 추가에 실패했습니다.");
+        alertFail("루틴 추가에 실패했습니다.");
     } finally {
       setIsAddLoading(false);
       onClose();
@@ -62,7 +62,7 @@ const AddRoutineForm = ({ onClose, fetchRoutines }: AddRoutineFormProps) => {
 
   return (
     <>
-      <ModalHeader className="flex flex-col gap-1">새로운 할일</ModalHeader>
+      <ModalHeader className="flex flex-col gap-1">새로운 루틴</ModalHeader>
       <form onSubmit={addARoutineHandler}>
         <ModalBody>
           <Input
@@ -81,8 +81,8 @@ const AddRoutineForm = ({ onClose, fetchRoutines }: AddRoutineFormProps) => {
           <Input
             type="text"
             name="new-title"
-            label="새로운 할일"
-            placeholder="할일을 입력해주세요."
+            label="새로운 루틴"
+            placeholder="루틴을 입력해주세요."
             maxLength={30}
             autoFocus
             isRequired

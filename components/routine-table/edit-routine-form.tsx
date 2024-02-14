@@ -25,7 +25,7 @@ const EditRoutineForm = ({
   onClose,
   fetchRoutines,
 }: EditRoutineProps) => {
-  // 수정된 시간,할일,완료,메모 입력,업데이트 로딩
+  // 수정된 시간,루틴,완료,메모 입력,업데이트 로딩
   const [editedTime, setEditedTime] = useState<string>(
     focusedRoutine.selected_at
   );
@@ -38,7 +38,7 @@ const EditRoutineForm = ({
   );
   const [isEditLoading, setIsEditLoading] = useState(false);
 
-  // 할일 수정 함수
+  // 루틴 수정 함수
   const editARoutineHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -64,14 +64,14 @@ const EditRoutineForm = ({
         updatedRoutine
       );
       if (response.status === 200) {
-        alertSuccess("할일이 수정 되었습니다.");
+        alertSuccess("루틴이 수정 되었습니다.");
         fetchRoutines(); // 데이터 새로고침
       } else {
-        throw new Error("할일 수정에 실패했습니다.");
+        throw new Error("루틴 수정에 실패했습니다.");
       }
     } catch (error: any) {
       error.message === "Request failed with status code 404" &&
-        alertFail("할일 수정에 실패했습니다.");
+        alertFail("루틴 수정에 실패했습니다.");
     } finally {
       setIsEditLoading(false);
       onClose();
@@ -80,7 +80,7 @@ const EditRoutineForm = ({
 
   return (
     <>
-      <ModalHeader className="flex flex-col gap-1">할일 수정</ModalHeader>
+      <ModalHeader className="flex flex-col gap-1">루틴 수정</ModalHeader>
       <form onSubmit={editARoutineHandler}>
         <ModalBody>
           <Input
@@ -98,8 +98,8 @@ const EditRoutineForm = ({
           <Input
             type="text"
             name="title"
-            label="할일"
-            placeholder="할일을 입력해주세요."
+            label="루틴"
+            placeholder="루틴을 입력해주세요."
             maxLength={30}
             autoFocus
             isRequired

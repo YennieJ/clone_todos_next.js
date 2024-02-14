@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchRoutines, addARoutine } from "@/data/routine";
 import { getAuth, customInitApp } from "@/firebase/server";
 
-// 할일 목록 가져오기
+// 루틴 목록 가져오기
 export async function GET(request: NextRequest) {
   customInitApp();
 
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(response, { status: 200 });
 }
 
-// 할일 추가
+// 루틴 추가
 export async function POST(request: NextRequest) {
   const token = request.headers.get("Authorization")?.split(" ")[1];
   const decodedToken = await getAuth().verifyIdToken(token as string);
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
   if (title === undefined) {
     const errMsg = {
-      message: "할일을 작성해주세요.",
+      message: "루틴을 작성해주세요.",
     };
     return NextResponse.json(errMsg, { status: 422 });
   }

@@ -26,7 +26,7 @@ const DeleteRoutineForm = ({
 }: DeleteRoutinProps) => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
-  // 할일 삭제 함수
+  // 루틴 삭제 함수
   const deleteARoutineHandler = async (
     e: FormEvent<HTMLFormElement>,
     id: string,
@@ -44,14 +44,14 @@ const DeleteRoutineForm = ({
     try {
       const response = await axiosInstance.delete(`/api/routine/${id}`);
       if (response.status === 200) {
-        alertSuccess("할일이 삭제 되었습니다.");
+        alertSuccess("루틴이 삭제 되었습니다.");
         fetchRoutines();
       } else {
-        throw new Error("할일 삭제에 실패했습니다.");
+        throw new Error("루틴 삭제에 실패했습니다.");
       }
     } catch (error: any) {
       error.message === "Request failed with status code 404" &&
-        alertFail("할일 추가에 실패했습니다.");
+        alertFail("루틴 추가에 실패했습니다.");
     } finally {
       setIsDeleteLoading(false);
       onClose();
@@ -59,7 +59,7 @@ const DeleteRoutineForm = ({
   };
   return (
     <>
-      <ModalHeader className="flex flex-col gap-1">할일 삭제</ModalHeader>
+      <ModalHeader className="flex flex-col gap-1">루틴 삭제</ModalHeader>
       <form
         onSubmit={async (e) => {
           deleteARoutineHandler(e, focusedRoutine.id, onClose);
@@ -78,7 +78,7 @@ const DeleteRoutineForm = ({
           <Input
             type="text"
             name="routine"
-            label="할일"
+            label="루틴"
             isReadOnly
             variant="bordered"
             labelPlacement="outside"

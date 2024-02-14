@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "@/firebase/server";
 import { fetchARoutine, deleteARoutine, editARoutine } from "@/data/routine";
 
-// 할일 단일 조회
+// 루틴 단일 조회
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
@@ -24,7 +24,7 @@ export async function GET(
   return NextResponse.json(response, { status: 200 });
 }
 
-// 할일 삭제 id
+// 루틴 삭제 id
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { slug: string } }
@@ -46,7 +46,7 @@ export async function DELETE(
   return NextResponse.json(response, { status: 200 });
 }
 
-// 할일 수정
+// 루틴 수정
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { slug: string } }

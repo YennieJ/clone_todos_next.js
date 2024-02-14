@@ -19,7 +19,7 @@ const DetailRoutine = ({ focusedRoutine, onClose }: DetailRoutineProps) => {
   return (
     <>
       <ModalHeader className="flex flex-col gap-1">
-        {`${focusedRoutine.is_done ? "완료된" : "진행중인"} 할일 상세`}
+        {`${focusedRoutine.is_done ? "완료된" : "진행중인"} 루틴 상세`}
       </ModalHeader>
       <ModalBody>
         <Input
@@ -34,7 +34,7 @@ const DetailRoutine = ({ focusedRoutine, onClose }: DetailRoutineProps) => {
         <Input
           type="text"
           name="routine"
-          label="할일"
+          label="루틴"
           isReadOnly
           variant="bordered"
           labelPlacement="outside"
