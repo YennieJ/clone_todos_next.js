@@ -66,12 +66,17 @@ const RoutineTable = () => {
     checkIsDone: boolean
   ) => {
     setCheckedId(checkedRoutine.id);
+
+    const updateRoutine = {
+      ...checkedRoutine,
+      is_done: checkIsDone,
+    };
+
     try {
       const response = await axiosInstance.patch(
         `/api/routine/${checkedRoutine.id}`,
-        checkedRoutine
+        updateRoutine
       );
-
       if (response.status === 200) {
         setRoutines((prevRoutines) =>
           prevRoutines.map((routine) =>
