@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(response, { status: 201 });
 }
 
+// 머릿말 가져오기
 export async function GET(request: NextRequest) {
   customInitApp();
 
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(response, { status: 200 });
 }
 
-// 할일 수정
+// 머릿말 수정
 export async function PATCH(request: NextRequest) {
   const token = request.headers.get("Authorization")?.split(" ")[1];
   const decodedToken = await getAuth().verifyIdToken(token as string);
@@ -64,7 +65,7 @@ export async function PATCH(request: NextRequest) {
   return NextResponse.json(response, { status: 200 });
 }
 
-// 할일 삭제 id
+// 머릿말 삭제
 export async function DELETE(request: NextRequest) {
   const token = request.headers.get("Authorization")?.split(" ")[1];
   const decodedToken = await getAuth().verifyIdToken(token as string);
